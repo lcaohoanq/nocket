@@ -15,7 +15,7 @@ public interface IUserService {
     String loginOrRegisterGoogle(String email, String name, String googleId, String avatarUrl) throws Exception;
 
     UserResponse findUserById(long id) throws DataNotFoundException;
-
+    
     User findUserByEmail(String email) throws DataNotFoundException;
 
     List<User> getAllUsers();
@@ -49,4 +49,6 @@ public interface IUserService {
     Boolean existsByPhoneNumber(String phoneNumber);
     
     Boolean existsById(Long id);
+    
+    
 }

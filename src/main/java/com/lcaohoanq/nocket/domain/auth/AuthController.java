@@ -113,7 +113,7 @@ public class AuthController implements Identifiable {
         value = "custom.logout.requests",
         extraTags = {"uri", "/api/v1/users/logout"},
         description = "Track logout request count")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Objects>> logout() throws Exception {
 
@@ -150,7 +150,7 @@ public class AuthController implements Identifiable {
     }
 
     @PutMapping("/verify/{otp}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<OtpResponse>> verifiedUser(
         @PathVariable int otp
     ) throws Exception {

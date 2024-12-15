@@ -26,7 +26,7 @@ public class WalletController {
     private final IUserService userService;
 
     @GetMapping("/users")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<WalletResponse>> getWalletByUserId() {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
@@ -46,7 +46,7 @@ public class WalletController {
     //     PUT: localhost:4000/api/v1/users/4/deposit/100
 //     Header: Authorization Bearer token
     @PutMapping("/{userId}/deposit/{payment}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<?>> deposit(
         @PathVariable long userId,
         @PathVariable long payment

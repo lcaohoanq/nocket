@@ -28,7 +28,7 @@ public class CartController {
     private final ICartService cartService;
 
     @GetMapping("")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<PageResponse<CartResponse>> getAll(
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "limit", defaultValue = "10") int limit
@@ -37,7 +37,7 @@ public class CartController {
     }
     
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<CartResponse>> getCartById(
         @PathVariable(value = "id") Long id
     ) {
@@ -52,7 +52,7 @@ public class CartController {
     }
     
     @GetMapping("/users")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<CartResponse>> getCartByUserId(
         @RequestParam(value = "id") Long id
     ){

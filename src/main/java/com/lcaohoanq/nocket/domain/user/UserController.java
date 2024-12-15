@@ -3,6 +3,7 @@ package com.lcaohoanq.nocket.domain.user;
 import com.lcaohoanq.nocket.api.ApiResponse;
 import com.lcaohoanq.nocket.api.PageResponse;
 import com.lcaohoanq.nocket.constant.MessageKey;
+import com.lcaohoanq.nocket.enums.FriendShipStatus;
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import jakarta.validation.Valid;
@@ -60,7 +61,7 @@ public class UserController {
     }
 
     @PostMapping("/details")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<UserResponse> takeUserDetailsFromToken() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
@@ -69,7 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/details/{userId}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<UserResponse>> updateUserDetails(
         @PathVariable Long userId,
         @Valid @RequestBody UpdateUserDTO updatedUserDTO,
@@ -96,7 +97,7 @@ public class UserController {
     }
 
     @PutMapping("/block/{userId}/{active}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF', 'ROLE_SHOP_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<String> blockOrEnable(
         @Valid @PathVariable long userId,
         @Valid @PathVariable int active
@@ -130,5 +131,5 @@ public class UserController {
         userService.restoreUser(id);
         return ResponseEntity.ok("Restore user successfully");
     }
-
+    
 }

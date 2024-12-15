@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.domain.cart.Cart;
 import com.lcaohoanq.nocket.domain.chat.ChatRoom;
+import com.lcaohoanq.nocket.domain.friendship.Friendship;
 import com.lcaohoanq.nocket.domain.role.Role;
 import com.lcaohoanq.nocket.domain.wallet.Wallet;
 import com.lcaohoanq.nocket.enums.Gender;
@@ -117,6 +118,14 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user2")
     @JsonIgnore
     private List<ChatRoom> receivedChats = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "requester")
+    @JsonIgnore
+    private List<Friendship> initiatedFriendships = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "addressee")
+    @JsonIgnore
+    private List<Friendship> receivedFriendships = new ArrayList<>();
 
     //Spring Security
     @Override
