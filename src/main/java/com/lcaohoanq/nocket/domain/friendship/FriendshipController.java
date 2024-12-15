@@ -118,6 +118,12 @@ public class FriendshipController {
                 if (friendship.getStatus() == FriendShipStatus.ACCEPTED) {
                     throw new MalformBehaviourException("Friend request already accepted");
                 }
+                
+                //ensure that current friend status is pending
+                if(friendship.getStatus() != FriendShipStatus.PENDING) {
+                    throw new MalformBehaviourException("Friend request not found");
+                }
+                
                 friendship.setStatus(FriendShipStatus.ACCEPTED);
                 return buildResponse("Successfully accepted friend request", friendship);
 
@@ -125,6 +131,12 @@ public class FriendshipController {
                 if (friendship.getStatus() == FriendShipStatus.DECLINED) {
                     throw new MalformBehaviourException("Friend request already declined");
                 }
+                
+                //ensure that current friend status is pending
+                if(friendship.getStatus() != FriendShipStatus.PENDING) {
+                    throw new MalformBehaviourException("Friend request not found");
+                }
+                
                 friendship.setStatus(FriendShipStatus.DECLINED);
                 return buildResponse("Successfully declined friend request", friendship);
 
@@ -132,6 +144,12 @@ public class FriendshipController {
                 if (friendship.getStatus() == FriendShipStatus.UNFRIENDED) {
                     throw new MalformBehaviourException("Friendship already ended");
                 }
+                
+                //ensure that current friend status is accepted
+                if(friendship.getStatus() != FriendShipStatus.ACCEPTED) {
+                    throw new MalformBehaviourException("Friend request not found");
+                }
+                
                 friendship.setStatus(FriendShipStatus.UNFRIENDED);
                 return buildResponse("Successfully unfriended", friendship);
 
