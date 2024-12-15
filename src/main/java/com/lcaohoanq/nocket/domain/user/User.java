@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
-import com.lcaohoanq.nocket.domain.cart.Cart;
 import com.lcaohoanq.nocket.domain.chat.ChatRoom;
 import com.lcaohoanq.nocket.domain.friendship.Friendship;
 import com.lcaohoanq.nocket.domain.role.Role;
@@ -89,11 +88,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name="phone_number",nullable = false, length = 100)
     @JsonProperty("phone_number")
     private String phoneNumber;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Cart cart;
-
+    
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference //to prevent infinite loop
     private Wallet wallet;

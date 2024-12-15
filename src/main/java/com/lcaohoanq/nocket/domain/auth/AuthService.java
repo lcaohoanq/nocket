@@ -1,33 +1,30 @@
 package com.lcaohoanq.nocket.domain.auth;
 
+import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
 import com.lcaohoanq.nocket.component.JwtTokenUtils;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
+import com.lcaohoanq.nocket.constant.MessageKey;
 import com.lcaohoanq.nocket.constant.Regex;
-import com.lcaohoanq.nocket.domain.cart.Cart;
-import com.lcaohoanq.nocket.domain.cart.CartRepository;
-import com.lcaohoanq.nocket.domain.cart.CartService;
+import com.lcaohoanq.nocket.domain.mail.IMailService;
+import com.lcaohoanq.nocket.domain.otp.Otp;
+import com.lcaohoanq.nocket.domain.otp.OtpService;
+import com.lcaohoanq.nocket.domain.role.RoleRepository;
+import com.lcaohoanq.nocket.domain.role.RoleService;
+import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
+import com.lcaohoanq.nocket.domain.token.TokenService;
+import com.lcaohoanq.nocket.domain.user.User;
+import com.lcaohoanq.nocket.domain.user.UserRepository;
 import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.domain.user.UserService;
+import com.lcaohoanq.nocket.domain.wallet.Wallet;
+import com.lcaohoanq.nocket.domain.wallet.WalletRepository;
 import com.lcaohoanq.nocket.enums.Country;
 import com.lcaohoanq.nocket.enums.Currency;
 import com.lcaohoanq.nocket.enums.UserStatus;
 import com.lcaohoanq.nocket.exception.ExpiredTokenException;
 import com.lcaohoanq.nocket.exception.MalformBehaviourException;
 import com.lcaohoanq.nocket.exception.PasswordWrongFormatException;
-import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
-import com.lcaohoanq.nocket.domain.otp.Otp;
-import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.wallet.Wallet;
-import com.lcaohoanq.nocket.domain.role.RoleRepository;
-import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
-import com.lcaohoanq.nocket.domain.user.UserRepository;
-import com.lcaohoanq.nocket.domain.wallet.WalletRepository;
-import com.lcaohoanq.nocket.domain.mail.IMailService;
-import com.lcaohoanq.nocket.domain.otp.OtpService;
-import com.lcaohoanq.nocket.domain.role.RoleService;
-import com.lcaohoanq.nocket.domain.token.TokenService;
-import com.lcaohoanq.nocket.domain.user.UserService;
 import com.lcaohoanq.nocket.mapper.UserMapper;
-import com.lcaohoanq.nocket.constant.MessageKey;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,8 +61,6 @@ public class AuthService implements IAuthService {
     private final OtpService otpService;
     private final UserService userService;
     private final WalletRepository walletRepository;
-    private final CartRepository cartRepository;
-    private final CartService cartService;
     private final UserMapper userMapper;
 
     @Override
@@ -136,13 +131,8 @@ public class AuthService implements IAuthService {
 
                 newWallet = walletRepository.save(newWallet);
 
-                Cart newCart = cartRepository.findById
-                    (cartService.create(newUser.getId()).id())
-                    .orElseThrow(() -> new DataNotFoundException("Cart not found"));
-
                 // Step 3: Set the wallet on the user and save the user again
                 newUser.setWallet(newWallet);
-                newUser.setCart(newCart);
                 userRepository.save(newUser);
 
                 return newUser;

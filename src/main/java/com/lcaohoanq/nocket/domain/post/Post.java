@@ -2,7 +2,7 @@ package com.lcaohoanq.nocket.domain.post;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
-import com.lcaohoanq.nocket.domain.cart.Cart;
+import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.enums.PostType;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
 import jakarta.persistence.AttributeOverride;
@@ -50,7 +50,7 @@ public class Post extends BaseEntity {
     private MediaMeta mediaMeta;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
     
 }
