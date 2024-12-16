@@ -7,10 +7,7 @@ import com.lcaohoanq.nocket.domain.token.TokenResponse;
 import com.lcaohoanq.nocket.domain.user.UserResponse;
 
 @JsonPropertyOrder({
-    "access_token",
-    "refresh_token",
-    "expires_refresh_token",
-    "expires",
+    "token",
     "user"
 })
 @JsonInclude(Include.NON_NULL)
