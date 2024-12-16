@@ -1,26 +1,36 @@
 package com.lcaohoanq.nocket.domain.post;
 
 import com.lcaohoanq.nocket.api.ApiResponse;
+import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
+import com.lcaohoanq.nocket.domain.asset.FileStoreService;
+import com.lcaohoanq.nocket.domain.friendship.Friendship;
 import com.lcaohoanq.nocket.domain.friendship.FriendshipRepository;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.domain.user.UserService;
 import com.lcaohoanq.nocket.enums.FriendShipStatus;
 import com.lcaohoanq.nocket.enums.PostType;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("${api.prefix}/posts")
@@ -31,6 +41,7 @@ public class PostController {
     private final PostRepository postRepository;
     private final IPostService postService;
     private final FriendshipRepository friendshipRepository;
+    private final FileStoreService fileStoreService;
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
@@ -41,7 +52,7 @@ public class PostController {
         User user = userService.findByUsername(userDetails.getUsername());
         return ResponseEntity.ok().body(
             ApiResponse.builder()
-                .message("Successfully get all friendships by user id")
+                .message("Successfully get all posts of user")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
                 .data(postRepository.findByUser(user))
@@ -49,6 +60,7 @@ public class PostController {
         );
     }
 
+    @GetMapping("/user-and-friends")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<?>> getPostsOfUserAndFriends() {
         // Get current authenticated user
@@ -57,10 +69,14 @@ public class PostController {
         User currentUser = userService.findByUsername(userDetails.getUsername());
 
         // Fetch friends (Assuming you have a method to get accepted friends)
-        List<User> friends = friendshipRepository.findFriendsByUserAndStatus(
+        List<Friendship> friendships = friendshipRepository.findFriendshipsByUserAndStatus(
             currentUser,
             FriendShipStatus.ACCEPTED
         );
+
+        List<User> friends = friendships.stream()
+            .map(f -> f.getUser1().equals(currentUser) ? f.getUser2() : f.getUser1())
+            .toList();
 
         // Create a list that includes the current user and their friends
         List<User> usersToFetchPostsFrom = new ArrayList<>();
@@ -83,16 +99,24 @@ public class PostController {
         );
     }
 
-    @PostMapping("/create")
+    @PostMapping(
+        value = "/upload",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<?>> createPost(
-    ) {
+        @ModelAttribute("file") MultipartFile file
+    ) throws IOException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername());
+
+        String filename = fileStoreService
+            .storeFile(fileStoreService.validateProductImage(file));
+        
         return ResponseEntity.ok().body(
             ApiResponse.builder()
-                .message("Successfully create post")
+                .message("Successfully upload post")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
                 .data(
@@ -102,11 +126,11 @@ public class PostController {
                             .caption("Muon duoc ai do tang")
                             .mediaMeta(
                                 MediaMeta.builder()
-                                    .imageUrl("https://www.google.com")
-                                    .createdAt(LocalDateTime.now())
-                                    .updatedAt(LocalDateTime.now())
-                                    .fileType("image")
-                                    .mimeType("image")
+                                    .fileName(filename)
+                                    .fileSize(file.getSize())
+                                    .imageUrl(filename)
+                                    .mimeType(file.getContentType())
+                                    .videoUrl(null)
                                     .build()
                             )
                             .user(user)

@@ -47,15 +47,6 @@ public class FileStoreService implements IFileStoreService {
     }
 
     @Override
-    public List<MultipartFile> validateListProductImage(List<MultipartFile> files) throws IOException {
-        files = files == null ? new ArrayList<>() : files;
-        if (files.size() > BusinessNumber.MAXIMUM_IMAGE_PER_POST) {
-            throw new IOException(localizationUtils.getLocalizedMessage(MessageKey.UPLOAD_IMAGES_MAX_5));
-        }
-        return files;
-    }
-
-    @Override
     public MultipartFile validateProductImage(MultipartFile file) throws IOException {
         // Kiểm tra kích thước file và định dạng
         if (file.getSize() == 0) {

@@ -21,9 +21,6 @@ public class MediaMeta extends BaseMedia {
 
     @JsonProperty("file_name")
     private String fileName;
-
-    @JsonProperty("file_type")
-    private String fileType;
     
     @JsonProperty("mime_type")
     private String mimeType;

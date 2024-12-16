@@ -105,6 +105,24 @@ public class FriendshipController {
             if (friendship.getStatus() == FriendShipStatus.ACCEPTED) {
                 throw new MalformBehaviourException("Users are already friends");
             }
+            
+            if (friendship.getStatus() == FriendShipStatus.BLOCKED) {
+                throw new MalformBehaviourException("Friend request cannot be sent to blocked user");
+            }
+
+            if (friendship.getStatus() == FriendShipStatus.DECLINED) {
+                // Update the status back to PENDING for a new friend request
+                friendship.setStatus(FriendShipStatus.PENDING);
+                friendshipRepository.save(friendship);
+                return ResponseEntity.ok().body(
+                    ApiResponse.builder()
+                        .message("Friend request sent again")
+                        .isSuccess(true)
+                        .statusCode(HttpStatus.OK.value())
+                        .data(friendship)
+                        .build()
+                );
+            }
         }
 
         // Create new friendship
