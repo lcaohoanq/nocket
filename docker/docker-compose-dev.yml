@@ -26,7 +26,7 @@ services:
     networks:
       - nocket_network
     ports:
-      - "80:80"
+      - "81:80"
     depends_on:
       - postgres
 
@@ -40,6 +40,80 @@ services:
       - redis_data:/data # Mount a volume for Redis data persistence
     networks:
       - nocket_network
+  
+#  authelia:
+#    image: authelia/authelia
+#    container_name: authelia
+#    volumes:
+#      - ./authelia:/config:rw #Read-Write Permission
+#    networks:
+#      - nocket_network
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.authelia.rule=Host(`authelia.example.com`)"
+#      - "traefik.http.routers.authelia.entrypoints=https"
+#      - "traefik.http.routers.authelia.tls=true"
+#      - "traefik.http.routers.authelia.tls.options=default"
+#      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.example.com"
+#      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+#      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+#    ports:
+#      - "9091:9091"
+#    restart: unless-stopped
+#
+#  traefik:
+#    image: traefik:2.10.5
+#    container_name: traefik
+#    volumes:
+#      - ./traefik:/etc/traefik
+#      - ./traefik/certs:/etc/traefik/certs
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    networks:
+#      - nocket_network
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.api.rule=Host(`traefik.example.com`)"
+#      - "traefik.http.routers.api.entrypoints=https"
+#      - "traefik.http.routers.api.service=api@internal"
+#      - "traefik.http.routers.api.tls=true"
+#      - "traefik.http.routers.api.tls.options=default"
+#      - "traefik.http.routers.api.middlewares=authelia@docker"
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#
+#    command:
+#      - "--api"
+#      - "--providers.docker=true"
+#      - "--providers.docker.exposedByDefault=false"
+#      - "--providers.file.filename=/etc/traefik/certificates.yml"
+#      - "--entrypoints.http=true"
+#      - "--entrypoints.http.address=:80"
+#      - "--entrypoints.http.http.redirections.entrypoint.to=https"
+#      - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
+#      - "--entrypoints.https=true"
+#      - "--entrypoints.https.address=:443"
+#      - "--log=true"
+#      - "--log.level=DEBUG"
+#
+#  dozzle:
+#    image: amir20/dozzle:latest
+#    environment:
+#      DOZZLE_AUTH_PROVIDER: forward-proxy
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.dozzle.rule=Host(`dozzle.example.com`)"
+#      - "traefik.http.routers.dozzle.entrypoints=https"
+#      - "traefik.http.routers.dozzle.tls=true"
+#      - "traefik.http.routers.dozzle.tls.options=default"
+#      - "traefik.http.routers.dozzle.middlewares=authelia@docker"
+#    ports:
+#      - "8081:8080"
+#    networks:
+#      - nocket_network
+#    restart: unless-stopped
 
 #  prometheus:
 #    image: prom/prometheus
