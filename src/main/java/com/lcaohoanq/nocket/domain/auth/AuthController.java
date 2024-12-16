@@ -1,17 +1,18 @@
 package com.lcaohoanq.nocket.domain.auth;
 
 import com.lcaohoanq.nocket.annotation.RetryAndBlock;
-import com.lcaohoanq.nocket.component.LocalizationUtils;
-import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
-import com.lcaohoanq.nocket.domain.token.Token;
-import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
 import com.lcaohoanq.nocket.api.ApiResponse;
+import com.lcaohoanq.nocket.component.LocalizationUtils;
+import com.lcaohoanq.nocket.constant.MessageKey;
+import com.lcaohoanq.nocket.domain.token.Token;
 import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.IUserService;
+import com.lcaohoanq.nocket.domain.user.User;
+import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
+import com.lcaohoanq.nocket.mapper.TokenMapper;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import com.lcaohoanq.nocket.util.Identifiable;
-import com.lcaohoanq.nocket.constant.MessageKey;
 import io.micrometer.core.annotation.Timed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -43,6 +44,7 @@ public class AuthController implements Identifiable {
     private final HttpServletRequest request;
     private final IAuthService authService;
     private final UserMapper userMapper;
+    private final TokenMapper tokenMapper;
 
     @Timed(
         value = "custom.login.requests",
@@ -67,10 +69,7 @@ public class AuthController implements Identifiable {
         log.info("User logged in successfully");
 
         LoginResponse response = new LoginResponse(
-            jwtToken.getToken(),
-            jwtToken.getRefreshToken(),
-            jwtToken.getRefreshExpirationDate(),
-            jwtToken.getExpirationDate(),
+            tokenMapper.toTokenResponse(jwtToken),
             userDetail
         );
 
