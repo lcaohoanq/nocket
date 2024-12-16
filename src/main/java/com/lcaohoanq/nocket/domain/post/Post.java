@@ -1,5 +1,7 @@
 package com.lcaohoanq.nocket.domain.post;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.domain.reaction.PostReaction;
@@ -52,6 +54,7 @@ public class Post extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PostReaction> reactions = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

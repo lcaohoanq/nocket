@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 public interface PostReactionRepository extends JpaRepository<PostReaction, UUID> {
     // Find reactions for a specific post
     List<PostReaction> findByPost(Post post);
+    
+    List<PostReaction> findByPostId(UUID postId);
 
     // Count reactions by type for a post
     @Query("SELECT r.reaction, COUNT(pr) FROM PostReaction pr " +

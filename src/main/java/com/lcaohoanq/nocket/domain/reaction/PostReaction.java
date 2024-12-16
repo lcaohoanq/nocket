@@ -1,17 +1,14 @@
 package com.lcaohoanq.nocket.domain.reaction;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.domain.post.Post;
 import com.lcaohoanq.nocket.domain.user.User;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,17 +24,20 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Table(name = "post_reactions")
 public class PostReaction extends BaseEntity {
-    
+
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
+    @JsonBackReference(value = "post-reactions")
     private Post post;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference(value = "user-reactions")
     private User user;
-    
+
     @ManyToOne
     @JoinColumn(name = "reaction_id", nullable = false)
+    @JsonBackReference(value = "reaction-type")
     private Reaction reaction;
     
 }

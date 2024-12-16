@@ -8,6 +8,7 @@ import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.domain.avatar.Avatar;
 import com.lcaohoanq.nocket.domain.chat.ChatRoom;
 import com.lcaohoanq.nocket.domain.friendship.Friendship;
+import com.lcaohoanq.nocket.domain.reaction.PostReaction;
 import com.lcaohoanq.nocket.domain.wallet.Wallet;
 import com.lcaohoanq.nocket.enums.Gender;
 import com.lcaohoanq.nocket.enums.UserRole;
@@ -112,6 +113,10 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user2")
     @JsonIgnore
     private List<Friendship> receivedFriendships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PostReaction> reactions = new ArrayList<>();
 
     //Spring Security
     @Override
