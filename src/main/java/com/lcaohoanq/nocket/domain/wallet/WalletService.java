@@ -12,6 +12,7 @@ import com.lcaohoanq.nocket.domain.wallet.WalletDTO.WalletResponse;
 import com.lcaohoanq.nocket.enums.EmailCategoriesEnum;
 import com.lcaohoanq.nocket.mapper.WalletMapper;
 import jakarta.mail.MessagingException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -33,7 +34,7 @@ public class WalletService implements IWalletService {
     private final WalletMapper walletMapper;
 
     @Override
-    public WalletResponse getByUserId(Long userId) {
+    public WalletResponse getByUserId(UUID userId) {
         UserResponse existedUser = userService.findUserById(userId);
         return walletMapper.toWalletResponse(walletRepository.findByUserId(existedUser.id()));
     }
@@ -45,7 +46,7 @@ public class WalletService implements IWalletService {
         backoff = @Backoff(delay = 2000)       // 2 seconds delay between retries
     )
     @Override
-    public void updateAccountBalance(Long userId, Long payment) throws Exception {
+    public void updateAccountBalance(UUID userId, Long payment) throws Exception {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)

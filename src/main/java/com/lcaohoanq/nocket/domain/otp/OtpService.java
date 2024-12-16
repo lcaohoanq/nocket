@@ -2,6 +2,7 @@ package com.lcaohoanq.nocket.domain.otp;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class OtpService implements IOtpService{
     }
 
     @Override
-    public void disableOtp(long id) {
+    public void disableOtp(UUID id) {
         Otp existingOtp = otpRepository.findById(id).orElse(null);
         if(existingOtp == null) return;
         existingOtp.setExpired(true);

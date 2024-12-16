@@ -1,6 +1,5 @@
 package com.lcaohoanq.nocket.domain.friendship;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.enums.FriendShipStatus;
@@ -13,8 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,31 +21,35 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "friendships")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Table(name = "friendships",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user1_id", "user2_id"})
+    }
+)
 public class Friendship extends BaseEntity {
+    @ManyToOne
+    @JoinColumn(name = "user1_id", nullable = false)
+    private User user1;
 
-    @Id
-    @SequenceGenerator(name = "carts_seq", sequenceName = "carts_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "carts_seq")
-    @Column(name="id", unique=true, nullable=false)
-    @JsonProperty("id")
-    private Long id;
-    
-    @Enumerated(EnumType.ORDINAL)
+    @ManyToOne
+    @JoinColumn(name = "user2_id", nullable = false)
+    private User user2;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private FriendShipStatus status;
-    
-    @ManyToOne
-    @JoinColumn(name = "requester_id", nullable = false)
-    private User requester;
-    
-    @ManyToOne
-    @JoinColumn(name = "addressee_id", nullable = false)
-    private User addressee;
 
+    // Ensure user1 and user2 are always in a consistent order
+    public void normalizeUsers() {
+        if (user1.getId().compareTo(user2.getId()) > 0) {
+            User temp = user1;
+            user1 = user2;
+            user2 = temp;
+        }
+    }
 }

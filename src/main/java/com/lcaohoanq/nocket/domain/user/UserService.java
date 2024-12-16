@@ -6,11 +6,9 @@ import com.lcaohoanq.nocket.component.JwtTokenUtils;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
 import com.lcaohoanq.nocket.domain.auth.UpdatePasswordDTO;
+import com.lcaohoanq.nocket.domain.avatar.Avatar;
 import com.lcaohoanq.nocket.domain.mail.IMailService;
 import com.lcaohoanq.nocket.domain.otp.OtpService;
-import com.lcaohoanq.nocket.domain.role.Role;
-import com.lcaohoanq.nocket.domain.role.RoleRepository;
-import com.lcaohoanq.nocket.domain.role.RoleService;
 import com.lcaohoanq.nocket.domain.socialaccount.SocialAccount;
 import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
 import com.lcaohoanq.nocket.enums.EmailCategoriesEnum;
@@ -24,9 +22,11 @@ import com.lcaohoanq.nocket.exception.PermissionDeniedException;
 import com.lcaohoanq.nocket.exception.PhoneAlreadyUsedException;
 import com.lcaohoanq.nocket.exception.UpdateEmailException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
+import com.lcaohoanq.nocket.metadata.MediaMeta;
 import com.lcaohoanq.nocket.util.PaginationConverter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,12 +44,10 @@ public class UserService implements IUserService, PaginationConverter {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
-    private final RoleRepository roleRepository;
     private final SocialAccountRepository socialAccountRepository;
     private final LocalizationUtils localizationUtils;
     private final IMailService mailService;
     private final OtpService otpService;
-    private final RoleService roleService;
     private final UserMapper userMapper;
     
     @Override
@@ -71,14 +69,22 @@ public class UserService implements IUserService, PaginationConverter {
 
         if (optionalUser.isEmpty()) {
             // Register new user
-            Role memberRole = roleRepository.findByUserRole(UserRole.MEMBER)
-                .orElseThrow(() -> new DataNotFoundException("Default MEMBER role not found"));
 
             User newUser = User.builder()
                 .name(name)
                 .email(email)
-                .avatar(avatarUrl)
-                .role(memberRole)
+                .avatars(
+                    List.of(
+                        Avatar.builder()
+                            .mediaMeta(
+                                MediaMeta.builder()
+                                    .imageUrl(avatarUrl)
+                                    .build()
+                            )
+                            .build()
+                    )
+                )
+                .role(UserRole.MEMBER)
                 .build();
 
             SocialAccount newSocialAccount = SocialAccount.builder()
@@ -95,7 +101,7 @@ public class UserService implements IUserService, PaginationConverter {
     }
 
     @Override
-    public UserResponse findUserById(long id) throws DataNotFoundException {
+    public UserResponse findUserById(UUID id) throws DataNotFoundException {
         return userRepository.findById(id)
             .map(userMapper::toUserResponse)
             .orElseThrow(() -> new DataNotFoundException(
@@ -123,7 +129,7 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Transactional
     @Override
-    public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception {
+    public User updateUser(UUID userId, UpdateUserDTO updatedUserDTO) throws Exception {
         // Find the existing user by userId
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
@@ -178,18 +184,15 @@ public class UserService implements IUserService, PaginationConverter {
         if (updatedUserDTO.name() != null) {
             existingUser.setName(updatedUserDTO.name());
         }
-        if (updatedUserDTO.address() != null) {
-            existingUser.setAddress(updatedUserDTO.address());
-        }
         if (updatedUserDTO.status() != null) {
             existingUser.setStatus(UserStatus.valueOf(updatedUserDTO.status()));
         }
         if (updatedUserDTO.dob() != null) {
             existingUser.setDateOfBirth(updatedUserDTO.dob());
         }
-        if (updatedUserDTO.avatar() != null) {
-            existingUser.setAvatar(updatedUserDTO.avatar());
-        }
+//        if (updatedUserDTO.avatar() != null) {
+//            existingUser.setAvatars(updatedUserDTO.avatar());
+//        }
 
         // Update the password if it is provided in the DTO
         if (updatedUserDTO.password() != null
@@ -208,7 +211,7 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Transactional
     @Override
-    public User updateUserBalance(Long userId, Long payment) throws Exception {
+    public User updateUserBalance(UUID userId, Long payment) throws Exception {
 //        User user = userRepository.findById(userId)
 //                .orElseThrow(() -> new DataNotFoundException(
 //                        localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
@@ -225,7 +228,7 @@ public class UserService implements IUserService, PaginationConverter {
     }
 
     @Override
-    public void bannedUser(Long userId) throws DataNotFoundException {
+    public void bannedUser(UUID userId) throws DataNotFoundException {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
@@ -251,7 +254,7 @@ public class UserService implements IUserService, PaginationConverter {
             throw new MalformBehaviourException("User do not verified their account");
         }
 
-        if (existingUser.getRole().getId() == 4) {
+        if (existingUser.getRole() == UserRole.MANAGER) {
             throw new PermissionDeniedException("Cannot change password for this account");
         }
 
@@ -270,7 +273,7 @@ public class UserService implements IUserService, PaginationConverter {
     //need send email
     @Override
     @Transactional
-    public void softDeleteUser(Long userId) throws DataNotFoundException {
+    public void softDeleteUser(UUID userId) throws DataNotFoundException {
         UserResponse existingUser = findUserById(userId);
         if (!existingUser.isActive()) {
             throw new MalformDataException("User is already deleted");
@@ -280,21 +283,12 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Override
     @Transactional
-    public void restoreUser(Long userId) throws DataNotFoundException {
+    public void restoreUser(UUID userId) throws DataNotFoundException {
         UserResponse existingUser = findUserById(userId);
         if (existingUser.isActive()) {
             throw new MalformDataException("User is already active");
         }
         userRepository.restoreUser(userId);
-    }
-
-    //need send email
-    @Override
-    @Transactional
-    public void updateRole(long id, long roleId) throws DataNotFoundException {
-        findUserById(id);
-        roleService.getRoleById(roleId);
-        userRepository.updateRole(id, roleId);
     }
 
     @Override
@@ -304,7 +298,7 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Override
     @Transactional
-    public void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException {
+    public void blockOrEnable(UUID userId, Boolean active) throws DataNotFoundException {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
@@ -331,7 +325,7 @@ public class UserService implements IUserService, PaginationConverter {
     }
 
     @Override
-    public Boolean existsById(Long id) {
+    public Boolean existsById(UUID id) {
         return userRepository.existsById(id);
     }
 

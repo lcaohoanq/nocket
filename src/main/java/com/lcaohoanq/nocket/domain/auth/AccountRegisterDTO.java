@@ -24,9 +24,6 @@ public record AccountRegisterDTO(
 
     @JsonProperty("gender") Gender gender,
 
-    @JsonProperty("address")
-    String address,
-
     @JsonProperty("password")
     @Pattern(regexp = Regex.PASSWORD_REGEX, message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")
     @NotBlank(message = "Password is required") String password,
@@ -43,9 +40,6 @@ public record AccountRegisterDTO(
 
     @JsonProperty("preferred_currency")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    Currency preferredCurrency,
-
-    @JsonProperty("avatar")
-    String avatar
+    Currency preferredCurrency
 
 ){}

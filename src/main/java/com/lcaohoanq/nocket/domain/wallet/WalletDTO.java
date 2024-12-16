@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public interface WalletDTO {
     
@@ -14,7 +15,7 @@ public interface WalletDTO {
         "updated_at"
     })
     record WalletResponse(
-        Long id,
+        UUID id,
         Float balance,
         @JsonProperty("created_at")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")

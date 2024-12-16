@@ -1,7 +1,10 @@
 package com.lcaohoanq.nocket.domain.chat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -23,14 +26,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Attachment {
-
-    @Id
-    @SequenceGenerator(name = "attachments_seq", sequenceName = "attachments_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachments_seq")
-    @Column(name="id", unique=true, nullable=false)
-    @JsonProperty("id")
-    private Long id;
+@AttributeOverrides({
+    @AttributeOverride(name = "createdAt", column = @Column(name = "attachment_created_at")),
+    @AttributeOverride(name = "updatedAt", column = @Column(name = "attachment_updated_at"))
+})
+public class Attachment extends BaseEntity {
     
     @Embedded
     private MediaMeta mediaMeta;

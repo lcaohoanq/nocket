@@ -5,6 +5,7 @@ import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.domain.wallet.WalletDTO.WalletResponse;
 import com.lcaohoanq.nocket.exception.MalformDataException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class WalletController {
     @PutMapping("/{userId}/deposit/{payment}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<?>> deposit(
-        @PathVariable long userId,
+        @PathVariable UUID userId,
         @PathVariable long payment
     ) throws Exception {
 

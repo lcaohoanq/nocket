@@ -8,6 +8,7 @@ import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import jakarta.validation.Valid;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -48,7 +49,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(
-        @PathVariable Long id
+        @PathVariable UUID id
     ) {
         return ResponseEntity.ok(
             ApiResponse.<UserResponse>builder()
@@ -72,7 +73,7 @@ public class UserController {
     @PutMapping("/details/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<UserResponse>> updateUserDetails(
-        @PathVariable Long userId,
+        @PathVariable UUID userId,
         @Valid @RequestBody UpdateUserDTO updatedUserDTO,
         BindingResult result
     ) throws Exception {
@@ -99,7 +100,7 @@ public class UserController {
     @PutMapping("/block/{userId}/{active}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     public ResponseEntity<String> blockOrEnable(
-        @Valid @PathVariable long userId,
+        @Valid @PathVariable UUID userId,
         @Valid @PathVariable int active
     ) {
         userService.blockOrEnable(userId, active > 0);
@@ -108,26 +109,16 @@ public class UserController {
         return ResponseEntity.ok().body(message);
     }
 
-    @PutMapping("/{id}/update-role/{roleId}")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<?> updateRole(
-        @PathVariable long id,
-        @PathVariable long roleId
-    ) {
-        userService.updateRole(id, roleId);
-        return ResponseEntity.ok("Update role successfully");
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
         userService.softDeleteUser(id);
         return ResponseEntity.ok("Delete user successfully");
     }
 
     @PutMapping("/{id}/restore")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<?> restoreUser(@PathVariable long id) {
+    public ResponseEntity<?> restoreUser(@PathVariable UUID id) {
         userService.restoreUser(id);
         return ResponseEntity.ok("Restore user successfully");
     }

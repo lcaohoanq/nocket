@@ -25,13 +25,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Otp extends BaseEntity {
 
-    @Id
-    @SequenceGenerator(name = "otps_seq", sequenceName = "otps_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "otps_seq")
-    @Column(name="id", unique=true, nullable=false)
-    @JsonProperty("id")
-    private Long id;
-
     @Column(name = "email")
     private String email;
 

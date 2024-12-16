@@ -1,11 +1,11 @@
 package com.lcaohoanq.nocket.exception;
 
-import com.lcaohoanq.nocket.base.exception.OutOfStockException;
-import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.api.ApiError;
 import com.lcaohoanq.nocket.base.exception.DataAlreadyExistException;
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
 import com.lcaohoanq.nocket.base.exception.DataWrongFormatException;
+import com.lcaohoanq.nocket.base.exception.OutOfStockException;
+import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.mail.MessagingException;
@@ -114,17 +114,6 @@ public class GlobalExceptionHandler {
             .build();
     }
 
-    @ExceptionHandler(BiddingRuleException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError<Object> handleBiddingRuleException(BiddingRuleException e) {
-        return ApiError.errorBuilder()
-            .message(localizationUtils.getLocalizedMessage(MessageKey.BIDDING_RULE_EXCEPTION))
-            .reason(e.getMessage())
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .isSuccess(false)
-            .build();
-    }
-
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError<Object> handleException(Exception e) {
@@ -187,17 +176,6 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(DeleteException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError<Object> handleDeleteException(DeleteException e) {
-        return ApiError.errorBuilder()
-            .message(localizationUtils.getLocalizedMessage(MessageKey.EXCEPTION_DELETE_ERROR))
-            .reason(e.getMessage())
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .isSuccess(false)
-            .build();
     }
 
     @ExceptionHandler(MalformDataException.class)
@@ -270,33 +248,11 @@ public class GlobalExceptionHandler {
             .build();
     }
 
-    @ExceptionHandler(KoiRevokeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError<Object> handleKoiRevokeException(KoiRevokeException e) {
-        return ApiError.errorBuilder()
-            .message(localizationUtils.getLocalizedMessage(MessageKey.EXCEPTION_KOI_REVOKE))
-            .reason(e.getMessage())
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .isSuccess(false)
-            .build();
-    }
-
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError<Object> handleBadCredentialsException(BadCredentialsException e) {
         return ApiError.errorBuilder()
             .message(localizationUtils.getLocalizedMessage(MessageKey.EXCEPTION_BAD_CREDENTIALS))
-            .reason(e.getMessage())
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .isSuccess(false)
-            .build();
-    }
-
-    @ExceptionHandler(FeedbackResponseException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError<Object> handleFeedBackResponseException(FeedbackResponseException e) {
-        return ApiError.errorBuilder()
-            .message(localizationUtils.getLocalizedMessage(MessageKey.FEEDBACK_EXCEPTION))
             .reason(e.getMessage())
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .isSuccess(false)

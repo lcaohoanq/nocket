@@ -5,11 +5,10 @@ import com.lcaohoanq.nocket.component.JwtTokenUtils;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
 import com.lcaohoanq.nocket.constant.Regex;
+import com.lcaohoanq.nocket.domain.avatar.Avatar;
 import com.lcaohoanq.nocket.domain.mail.IMailService;
 import com.lcaohoanq.nocket.domain.otp.Otp;
 import com.lcaohoanq.nocket.domain.otp.OtpService;
-import com.lcaohoanq.nocket.domain.role.RoleRepository;
-import com.lcaohoanq.nocket.domain.role.RoleService;
 import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
 import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.User;
@@ -20,17 +19,22 @@ import com.lcaohoanq.nocket.domain.wallet.Wallet;
 import com.lcaohoanq.nocket.domain.wallet.WalletRepository;
 import com.lcaohoanq.nocket.enums.Country;
 import com.lcaohoanq.nocket.enums.Currency;
+import com.lcaohoanq.nocket.enums.UserRole;
 import com.lcaohoanq.nocket.enums.UserStatus;
 import com.lcaohoanq.nocket.exception.ExpiredTokenException;
 import com.lcaohoanq.nocket.exception.MalformBehaviourException;
 import com.lcaohoanq.nocket.exception.PasswordWrongFormatException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
+import com.lcaohoanq.nocket.metadata.MediaMeta;
+import com.lcaohoanq.nocket.util.UUIDv7;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -52,11 +56,9 @@ public class AuthService implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
-    private final RoleRepository roleRepository;
     private final SocialAccountRepository socialAccountRepository;
     private final LocalizationUtils localizationUtils;
     private final IMailService mailService;
-    private final RoleService roleService;
     private final TokenService tokenService;
     private final OtpService otpService;
     private final UserService userService;
@@ -100,6 +102,7 @@ public class AuthService implements IAuthService {
                 .orElse(Currency.USD));
 
         return Single.fromCallable(() -> {
+                // 1. First create the User without avatars
                 User newUser = User.builder()
                     .name(accountRegisterDTO.name())
                     .email(accountRegisterDTO.email())
@@ -108,36 +111,42 @@ public class AuthService implements IAuthService {
                     .isActive(true)
                     .gender(accountRegisterDTO.gender())
                     .status(UserStatus.UNVERIFIED)
-                    .address(accountRegisterDTO.address())
                     .dateOfBirth(accountRegisterDTO.dateOfBirth())
                     .preferredLanguage(preferredLanguage)
                     .preferredCurrency(preferredCurrency)
-                    .avatar(Optional.ofNullable(accountRegisterDTO.avatar())
-                                .orElse(
-                                    "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"))
-                    .role(roleRepository
-                              .findById(1L)
-                              .orElseThrow(() -> new DataNotFoundException("Role not found")))
+                    .role(UserRole.MEMBER)
                     .build();
 
-                // Step 1: Save the user first without the wallet
+                // 2. Save the user first
                 newUser = userRepository.save(newUser);
 
-                // Step 2: Create and save the wallet with a reference to the saved user
-                Wallet newWallet = Wallet.builder()
-                    .balance(0F)
-                    .user(newUser)  // Set the saved user
+                // 3. Create and set the avatar with the saved user
+                Avatar avatar = Avatar.builder()
+                    .mediaMeta(
+                        MediaMeta.builder()
+                            .imageUrl(
+                                "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg")
+                            .build()
+                    )
+                    .user(newUser)  // Set the user reference
                     .build();
 
+                // 4. Add avatar to user's avatar list
+                newUser.setAvatars(List.of(avatar));
+                
+                // 5. Create and save the wallet
+                Wallet newWallet = Wallet.builder()
+                    .balance(0F)
+                    .user(newUser)
+                    .build();
+                
                 newWallet = walletRepository.save(newWallet);
-
-                // Step 3: Set the wallet on the user and save the user again
                 newUser.setWallet(newWallet);
-                userRepository.save(newUser);
 
-                return newUser;
+                // 6. Save everything
+                return userRepository.save(newUser);
             })
-            .flatMap(mailService::createEmailVerification)  // Chain the email sending
+            .flatMap(mailService::createEmailVerification)
             .subscribeOn(Schedulers.io())
             .blockingGet();
     }
@@ -189,7 +198,7 @@ public class AuthService implements IAuthService {
 
     @Transactional
     @Override
-    public void verifyOtpToVerifyUser(Long userId, String otp) throws Exception {
+    public void verifyOtpToVerifyUser(UUID userId, String otp) throws Exception {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
@@ -234,7 +243,7 @@ public class AuthService implements IAuthService {
 
     @Transactional
     @Override
-    public void verifyOtpIsCorrect(Long userId, String otp) throws Exception {
+    public void verifyOtpIsCorrect(UUID userId, String otp) throws Exception {
         UserResponse user = userService.findUserById(userId);
 
         Otp otpEntity = getOtpByEmailOtp(user.email(), otp);

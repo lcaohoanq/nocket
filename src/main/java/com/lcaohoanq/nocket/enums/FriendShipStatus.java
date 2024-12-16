@@ -1,5 +1,5 @@
 package com.lcaohoanq.nocket.enums;
 
 public enum FriendShipStatus {
-    PENDING, ACCEPTED, UNFRIENDED, DECLINED
+    PENDING, ACCEPTED, BLOCKED, DECLINED
 }

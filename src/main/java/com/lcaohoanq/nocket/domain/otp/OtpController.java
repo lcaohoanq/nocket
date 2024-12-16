@@ -1,16 +1,15 @@
 package com.lcaohoanq.nocket.domain.otp;
 
-import com.lcaohoanq.nocket.component.LocalizationUtils;
-import com.lcaohoanq.nocket.domain.mail.MailController;
-import com.lcaohoanq.nocket.domain.phone.PhoneController;
-import com.lcaohoanq.nocket.domain.auth.VerifyUserDTO;
-import com.lcaohoanq.nocket.domain.auth.OtpResponse;
 import com.lcaohoanq.nocket.api.ApiResponse;
-import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
-import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.auth.AuthService;
-import com.lcaohoanq.nocket.domain.user.IUserService;
+import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
+import com.lcaohoanq.nocket.domain.auth.AuthService;
+import com.lcaohoanq.nocket.domain.auth.OtpResponse;
+import com.lcaohoanq.nocket.domain.auth.VerifyUserDTO;
+import com.lcaohoanq.nocket.domain.mail.MailController;
+import com.lcaohoanq.nocket.domain.user.IUserService;
+import com.lcaohoanq.nocket.domain.user.User;
+import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtpController {
 
     private final MailController mailController;
-    private final PhoneController phoneController;
     private final IUserService userService;
     private final LocalizationUtils localizationUtils;
     private final AuthService authService;
@@ -40,7 +38,7 @@ public class OtpController {
         throws MessagingException {
         return switch (type.toLowerCase()) {
             case "mail" -> mailController.sendOtp(recipient);
-            case "phone" -> phoneController.sendPhoneOtp(recipient);
+//            case "phone" -> phoneController.sendPhoneOtp(recipient);
             default -> new ResponseEntity<>("Invalid type specified", HttpStatus.BAD_REQUEST);
         };
     }

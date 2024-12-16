@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.lcaohoanq.nocket.domain.role.Role;
 import com.lcaohoanq.nocket.enums.Gender;
+import com.lcaohoanq.nocket.enums.UserRole;
 import com.lcaohoanq.nocket.enums.UserStatus;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @JsonPropertyOrder(
     {
@@ -32,7 +33,7 @@ import java.time.LocalDateTime;
     }
 )
 public record UserResponse(
-    Long id,
+    UUID id,
     String email,
     @JsonIgnore String password,
     String name,
@@ -41,10 +42,9 @@ public record UserResponse(
     UserStatus status,
     @JsonProperty("date_of_birth") String dateOfBirth,
     @JsonProperty("phone_number") String phoneNumber,
-    @JsonProperty("address") String address,
     @JsonProperty("avatar") String avatar,
-    @JsonProperty("role") Role role,
-    @JsonIgnore @JsonProperty("wallet_id") Long walletId,
+    @JsonProperty("role") UserRole role,
+    @JsonIgnore @JsonProperty("wallet_id") UUID walletId,
     @JsonProperty("preferred_language") String preferredLanguage,
     @JsonProperty("preferred_currency") String preferredCurrency,
     

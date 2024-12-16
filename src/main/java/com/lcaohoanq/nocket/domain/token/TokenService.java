@@ -76,7 +76,7 @@ public class TokenService implements ITokenService{
 
     @Transactional
     @Override
-    public Token addToken(long userId, String token, boolean isMobileDevice) {
+    public Token addToken(UUID userId, String token, boolean isMobileDevice) {
         UserResponse existingUser = userService.findUserById(userId);
         List<Token> userTokens = tokenRepository.findByUserId(existingUser.id());
         int tokenCount = userTokens.size();

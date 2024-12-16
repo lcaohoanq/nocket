@@ -27,14 +27,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class Wallet extends BaseEntity {
-
-    @Id
-    @SequenceGenerator(name = "wallets_seq", sequenceName = "wallets_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "wallets_seq")
-    @Column(name="id", unique=true, nullable=false)
-    @JsonProperty("id")
-    private Long id;
-
+    
     @Column(name = "balance", nullable = false)
     private Float balance;
 

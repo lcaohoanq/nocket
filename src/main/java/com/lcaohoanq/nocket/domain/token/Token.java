@@ -27,14 +27,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "tokens")
 public class Token extends BaseEntity {
-
-    @Id
-    @SequenceGenerator(name = "tokens_seq", sequenceName = "tokens_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokens_seq")
-    @Column(name="id", unique=true, nullable=false)
-    @JsonProperty("id")
-    private Long id;
-
+    
     @Column(name = "token", length = 255)
     private String token;
 

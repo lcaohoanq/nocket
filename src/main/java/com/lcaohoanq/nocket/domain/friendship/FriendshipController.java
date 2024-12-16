@@ -9,8 +9,7 @@ import com.lcaohoanq.nocket.exception.MalformBehaviourException;
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,24 +29,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FriendshipController {
 
-    public final FriendshipRepository friendshipRepository;
+    private final FriendshipRepository friendshipRepository;
     private final IUserService userService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     @GetMapping("")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<?>> getAll(
-    ) {
+    public ResponseEntity<ApiResponse<?>> getAllFriendships() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
-        User user = userService.findByUsername(userDetails.getUsername());
+        User currentUser = userService.findByUsername(userDetails.getUsername());
+
         return ResponseEntity.ok().body(
             ApiResponse.builder()
-                .message("Successfully get all friendships by user id")
+                .message("Successfully retrieved all friendships")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
-                .data(friendshipRepository.findByUser(user))
+                .data(friendshipRepository.findFriendshipsByUserAndStatus(
+                    currentUser, FriendShipStatus.ACCEPTED
+                ))
                 .build()
         );
     }
@@ -64,32 +65,45 @@ public class FriendshipController {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
-        User user = userService.findByUsername(userDetails.getUsername());
+        User requester = userService.findByUsername(userDetails.getUsername());
 
         User addressee = userRepository
             .findById(friendshipRequest.addresseeId())
-            .orElseThrow(() -> new MalformBehaviourException("addressee not found"));
+            .orElseThrow(() -> new MalformBehaviourException("Addressee not found"));
 
-        if (friendshipRepository.findByRequesterAndAddressee(user, addressee) != null) {
-            throw new MalformBehaviourException("Friend request already sent");
-        }
-
-        if (Objects.equals(user.getId(), addressee.getId())) {
+        // Prevent self-friending
+        if (requester.getId().equals(addressee.getId())) {
             throw new MalformBehaviourException("Cannot send friend request to yourself");
         }
 
+        // Check if friendship already exists
+        Optional<Friendship> existingFriendship = friendshipRepository
+            .findFriendshipBetweenUsers(requester, addressee);
+
+        if (existingFriendship.isPresent()) {
+            Friendship friendship = existingFriendship.get();
+            if (friendship.getStatus() == FriendShipStatus.PENDING) {
+                throw new MalformBehaviourException("Friend request already sent");
+            }
+            if (friendship.getStatus() == FriendShipStatus.ACCEPTED) {
+                throw new MalformBehaviourException("Users are already friends");
+            }
+        }
+
+        // Create new friendship
+        Friendship newFriendship = Friendship.builder()
+            .user1(requester)
+            .user2(addressee)
+            .status(FriendShipStatus.PENDING)
+            .build();
+        newFriendship.normalizeUsers(); // Ensure consistent user order
+
         return ResponseEntity.ok().body(
             ApiResponse.builder()
-                .message("Successfully create friend request")
+                .message("Successfully created friend request")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
-                .data(friendshipRepository.save(Friendship.builder()
-                                                    .requester(user)
-                                                    .addressee(addressee)
-                                                    .status(FriendShipStatus.PENDING)
-                                                    .createdAt(LocalDateTime.now())
-                                                    .updatedAt(LocalDateTime.now())
-                                                    .build()))
+                .data(friendshipRepository.save(newFriendship))
                 .build()
         );
     }
@@ -102,66 +116,40 @@ public class FriendshipController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
 
-        User requester = userService.findByUsername(userDetails.getUsername());
-        User addressee = userMapper.toUser(userService.findUserById(request.addresseeId()));
+        User currentUser = userService.findByUsername(userDetails.getUsername());
+        User otherUser = userMapper.toUser(userService.findUserById(request.addresseeId()));
 
-        Friendship friendship = friendshipRepository.findByRequesterAndAddressee(requester,
-                                                                                 addressee);
+        // Find existing friendship
+        Friendship friendship = friendshipRepository
+            .findFriendshipBetweenUsers(currentUser, otherUser)
+            .orElseThrow(() -> new MalformBehaviourException("Friend request not found"));
 
-        if (friendship == null) {
-            throw new MalformBehaviourException("Friend request not found");
-        }
-
-        // Handle different actions
+        // Validate and update friendship based on action
         switch (request.action()) {
             case ACCEPTED:
-                if (friendship.getStatus() == FriendShipStatus.ACCEPTED) {
-                    throw new MalformBehaviourException("Friend request already accepted");
-                }
-                
-                //ensure that current friend status is pending
-                if(friendship.getStatus() != FriendShipStatus.PENDING) {
-                    throw new MalformBehaviourException("Friend request not found");
-                }
-                
+                validateFriendshipAction(friendship, FriendShipStatus.PENDING,
+                                         "Friend request can only be accepted when pending");
                 friendship.setStatus(FriendShipStatus.ACCEPTED);
-                return buildResponse("Successfully accepted friend request", friendship);
+                break;
 
             case DECLINED:
-                if (friendship.getStatus() == FriendShipStatus.DECLINED) {
-                    throw new MalformBehaviourException("Friend request already declined");
-                }
-                
-                //ensure that current friend status is pending
-                if(friendship.getStatus() != FriendShipStatus.PENDING) {
-                    throw new MalformBehaviourException("Friend request not found");
-                }
-                
+                validateFriendshipAction(friendship, FriendShipStatus.PENDING,
+                                         "Friend request can only be declined when pending");
                 friendship.setStatus(FriendShipStatus.DECLINED);
-                return buildResponse("Successfully declined friend request", friendship);
+                break;
 
-            case UNFRIENDED:
-                if (friendship.getStatus() == FriendShipStatus.UNFRIENDED) {
-                    throw new MalformBehaviourException("Friendship already ended");
-                }
-                
-                //ensure that current friend status is accepted
-                if(friendship.getStatus() != FriendShipStatus.ACCEPTED) {
-                    throw new MalformBehaviourException("Friend request not found");
-                }
-                
-                friendship.setStatus(FriendShipStatus.UNFRIENDED);
-                return buildResponse("Successfully unfriended", friendship);
+            case BLOCKED:
+                // Can block at any point
+                friendship.setStatus(FriendShipStatus.BLOCKED);
+                break;
 
             default:
                 throw new IllegalArgumentException("Invalid action");
         }
-    }
 
-    private ResponseEntity<ApiResponse<?>> buildResponse(String message, Friendship friendship) {
         return ResponseEntity.ok().body(
             ApiResponse.builder()
-                .message(message)
+                .message("Successfully processed friend request")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
                 .data(friendshipRepository.save(friendship))
@@ -169,4 +157,34 @@ public class FriendshipController {
         );
     }
 
+    // Helper method to validate friendship status before action
+    private void validateFriendshipAction(
+        Friendship friendship,
+        FriendShipStatus expectedStatus,
+        String errorMessage
+    ) {
+        if (friendship.getStatus() != expectedStatus) {
+            throw new MalformBehaviourException(errorMessage);
+        }
+    }
+
+    // Additional method to get pending friend requests
+    @GetMapping("/pending-requests")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
+    public ResponseEntity<ApiResponse<?>> getPendingFriendRequests() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+        User currentUser = userService.findByUsername(userDetails.getUsername());
+
+        return ResponseEntity.ok().body(
+            ApiResponse.builder()
+                .message("Successfully retrieved pending friend requests")
+                .isSuccess(true)
+                .statusCode(HttpStatus.OK.value())
+                .data(friendshipRepository.findFriendshipsByUserAndStatus(
+                    currentUser, FriendShipStatus.PENDING
+                ))
+                .build()
+        );
+    }
 }

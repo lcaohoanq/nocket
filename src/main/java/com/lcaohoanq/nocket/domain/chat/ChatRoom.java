@@ -27,13 +27,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ChatRoom extends BaseEntity {
 
-    @Id
-    @SequenceGenerator(name = "chat_rooms_seq", sequenceName = "chat_rooms_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chat_rooms_seq")
-    @Column(name = "id", unique = true, nullable = false)
-    @JsonProperty("id")
-    private Long id;
-
     @ManyToOne
     @JoinColumn(name = "user_1_id", nullable = false)
     private User user1;
