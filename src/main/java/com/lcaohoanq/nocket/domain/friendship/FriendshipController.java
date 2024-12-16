@@ -10,6 +10,7 @@ import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import jakarta.validation.Valid;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,20 +36,35 @@ public class FriendshipController {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    @GetMapping("")
+    @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<?>> getAllFriendships() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
-        User currentUser = userService.findByUsername(userDetails.getUsername());
-
+    public ResponseEntity<ApiResponse<?>> getAll() {
         return ResponseEntity.ok().body(
             ApiResponse.builder()
                 .message("Successfully retrieved all friendships")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
+                .data(friendshipRepository.findAll())
+                .build()
+        );
+    }
+
+    @GetMapping("/user-and-status")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
+    public ResponseEntity<ApiResponse<?>> getAllByUserAndStatus(
+        @RequestParam UUID userId,
+        @RequestParam FriendShipStatus status
+    ) {
+        User existingUser = userRepository.findById(userId)
+            .orElseThrow(() -> new MalformBehaviourException("User not found"));
+        
+        return ResponseEntity.ok().body(
+            ApiResponse.builder()
+                .message("Successfully retrieved all friendships by user and status")
+                .isSuccess(true)
+                .statusCode(HttpStatus.OK.value())
                 .data(friendshipRepository.findFriendshipsByUserAndStatus(
-                    currentUser, FriendShipStatus.ACCEPTED
+                    existingUser, status
                 ))
                 .build()
         );

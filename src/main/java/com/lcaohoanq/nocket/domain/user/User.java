@@ -1,5 +1,6 @@
 package com.lcaohoanq.nocket.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -93,6 +94,7 @@ public class User extends BaseEntity implements UserDetails {
     private String preferredCurrency;
 
     @Column(name = "last_login_timestamp")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime lastLoginTimestamp;
 
     @OneToMany(mappedBy = "user1")
