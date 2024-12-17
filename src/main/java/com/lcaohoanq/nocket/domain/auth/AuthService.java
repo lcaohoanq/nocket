@@ -12,8 +12,8 @@ import com.lcaohoanq.nocket.domain.otp.OtpService;
 import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
 import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.User;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.domain.user.UserRepository;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
 import com.lcaohoanq.nocket.domain.user.UserService;
 import com.lcaohoanq.nocket.domain.wallet.Wallet;
 import com.lcaohoanq.nocket.domain.wallet.WalletRepository;
@@ -26,7 +26,6 @@ import com.lcaohoanq.nocket.exception.MalformBehaviourException;
 import com.lcaohoanq.nocket.exception.PasswordWrongFormatException;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
-import com.lcaohoanq.nocket.util.UUIDv7;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,7 +66,7 @@ public class AuthService implements IAuthService {
 
     @Override
     @Transactional
-    public User register(AccountRegisterDTO accountRegisterDTO) throws Exception {
+    public User register(AuthPort.AccountRegisterDTO accountRegisterDTO) throws Exception {
 
         if (!accountRegisterDTO.password().matches(Regex.PASSWORD_REGEX)) {
             throw new PasswordWrongFormatException(
@@ -171,7 +170,7 @@ public class AuthService implements IAuthService {
 
     //Token
     @Override
-    public UserResponse getUserDetailsFromToken(String token) throws Exception {
+    public UserPort.UserResponse getUserDetailsFromToken(String token) throws Exception {
         if (jwtTokenUtils.isTokenExpired(token)) {
             throw new ExpiredTokenException("Token is expired");
         }
@@ -244,7 +243,7 @@ public class AuthService implements IAuthService {
     @Transactional
     @Override
     public void verifyOtpIsCorrect(UUID userId, String otp) throws Exception {
-        UserResponse user = userService.findUserById(userId);
+        UserPort.UserResponse user = userService.findUserById(userId);
 
         Otp otpEntity = getOtpByEmailOtp(user.email(), otp);
 

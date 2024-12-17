@@ -1,8 +1,8 @@
 package com.lcaohoanq.nocket.domain.user;
 
-import com.lcaohoanq.nocket.domain.auth.UpdatePasswordDTO;
 import com.lcaohoanq.nocket.api.PageResponse;
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
+import com.lcaohoanq.nocket.domain.auth.AuthPort;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface IUserService {
 
-    PageResponse<UserResponse> fetchUser(Pageable pageable);
+    PageResponse<UserPort.UserResponse> fetchUser(Pageable pageable);
 
     String loginOrRegisterGoogle(String email, String name, String googleId, String avatarUrl) throws Exception;
 
-    UserResponse findUserById(UUID id) throws DataNotFoundException;
+    UserPort.UserResponse findUserById(UUID id) throws DataNotFoundException;
     
     User findUserByEmail(String email) throws DataNotFoundException;
 
@@ -28,14 +28,14 @@ public interface IUserService {
     void blockOrEnable(UUID userId, Boolean active) throws DataNotFoundException;
 
     @Transactional
-    User updateUser(UUID userId, UpdateUserDTO updatedUserDTO) throws Exception;
+    User updateUser(UUID userId, UserPort.UpdateUserDTO updatedUserDTO) throws Exception;
 
     @Transactional
     User updateUserBalance(UUID userId, Long payment) throws Exception;
     
     void bannedUser(UUID userId) throws DataNotFoundException;
 
-    void updatePassword(UpdatePasswordDTO updatePasswordDTO) throws Exception;
+    void updatePassword(AuthPort.UpdatePasswordDTO updatePasswordDTO) throws Exception;
 
     void softDeleteUser(UUID userId) throws DataNotFoundException;
 

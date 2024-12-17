@@ -8,7 +8,7 @@ import com.lcaohoanq.nocket.domain.token.Token;
 import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
 import com.lcaohoanq.nocket.mapper.TokenMapper;
 import com.lcaohoanq.nocket.mapper.UserMapper;
@@ -52,7 +52,7 @@ public class AuthController implements Identifiable {
         description = "Track login request count")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
-        @RequestBody @Valid UserLoginDTO userLoginDTO,
+        @RequestBody @Valid AuthPort.UserLoginDTO userLoginDTO,
         BindingResult result,
         HttpServletRequest request
     ) throws Exception {
@@ -63,7 +63,7 @@ public class AuthController implements Identifiable {
 
         String token = authService.login(userLoginDTO.email(), userLoginDTO.password());
         String userAgent = request.getHeader("User-Agent");
-        UserResponse userDetail = authService.getUserDetailsFromToken(token);
+        UserPort.UserResponse userDetail = authService.getUserDetailsFromToken(token);
         Token jwtToken = tokenService.addToken(userDetail.id(), token, isMobileDevice(userAgent));
 
         log.info("User logged in successfully");
@@ -87,8 +87,8 @@ public class AuthController implements Identifiable {
         extraTags = {"uri", "/api/v1/users/register"},
         description = "Track register request count")
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponse>> createUser(
-        @RequestBody @Valid AccountRegisterDTO accountRegisterDTO,
+    public ResponseEntity<ApiResponse<UserPort.UserResponse>> createUser(
+        @RequestBody @Valid AuthPort.AccountRegisterDTO accountRegisterDTO,
         BindingResult result
     ) throws Exception {
 
@@ -99,7 +99,7 @@ public class AuthController implements Identifiable {
         User user = authService.register(accountRegisterDTO);
         log.info("New user registered successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            ApiResponse.<UserResponse>builder()
+            ApiResponse.<UserPort.UserResponse>builder()
                 .message(
                     localizationUtils.getLocalizedMessage(MessageKey.REGISTER_SUCCESSFULLY))
                 .statusCode(HttpStatus.CREATED.value())
@@ -173,7 +173,7 @@ public class AuthController implements Identifiable {
     @RetryAndBlock(maxAttempts = 3, blockDurationSeconds = 3600, maxDailyAttempts = 6)
     @PostMapping("/send-verify-otp")
     public ResponseEntity<ApiResponse<OtpResponse>> verifiedUserNotLogin(
-        @Valid @RequestBody VerifyUserDTO verifyUserDTO,
+        @Valid @RequestBody AuthPort.VerifyUserDTO verifyUserDTO,
         BindingResult result
     ) throws Exception {
         if (result.hasErrors()) {

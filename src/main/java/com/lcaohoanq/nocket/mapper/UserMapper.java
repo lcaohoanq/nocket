@@ -1,7 +1,7 @@
 package com.lcaohoanq.nocket.mapper;
 
 import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -10,7 +10,7 @@ import org.mapstruct.Named;
 public interface UserMapper {
     @Mapping(target = "walletId", source = "wallet.id")
     @Mapping(target = "avatar", source = "user", qualifiedByName = "getFirstAvatar")
-    UserResponse toUserResponse(User user);
+    UserPort.UserResponse toUserResponse(User user);
 
     @Named("getFirstAvatar")
     default String getFirstAvatar(User user) {
@@ -19,6 +19,6 @@ public interface UserMapper {
             .orElse(null);
     }
     
-    User toUser(UserResponse userResponse);
+    User toUser(UserPort.UserResponse userResponse);
     
 }

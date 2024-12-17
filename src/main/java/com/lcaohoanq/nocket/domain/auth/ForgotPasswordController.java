@@ -54,7 +54,7 @@ public class ForgotPasswordController {
     @PutMapping("")
     @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<?>> updatePassword(
-        @Valid @RequestBody UpdatePasswordDTO updatePasswordDTO,
+        @Valid @RequestBody AuthPort.UpdatePasswordDTO updatePasswordDTO,
         BindingResult result
     ) throws Exception {
         if (result.hasErrors()) {

@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("")
     //@PreAuthorize("permitAll()")
     //can use or not but must implement on both WebSecurityConfig and JwtTokenFilter
-    public ResponseEntity<PageResponse<UserResponse>> fetchUser(
+    public ResponseEntity<PageResponse<UserPort.UserResponse>> fetchUser(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int limit
     ) {
@@ -48,11 +48,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(
+    public ResponseEntity<ApiResponse<UserPort.UserResponse>> getUserById(
         @PathVariable UUID id
     ) {
         return ResponseEntity.ok(
-            ApiResponse.<UserResponse>builder()
+            ApiResponse.<UserPort.UserResponse>builder()
                 .message("Successfully get user by id")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
@@ -63,7 +63,7 @@ public class UserController {
 
     @PostMapping("/details")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<UserResponse> takeUserDetailsFromToken() throws Exception {
+    public ResponseEntity<UserPort.UserResponse> takeUserDetailsFromToken() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         return ResponseEntity.ok(
@@ -72,9 +72,9 @@ public class UserController {
 
     @PutMapping("/details/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<UserResponse>> updateUserDetails(
+    public ResponseEntity<ApiResponse<UserPort.UserResponse>> updateUserDetails(
         @PathVariable UUID userId,
-        @Valid @RequestBody UpdateUserDTO updatedUserDTO,
+        @Valid @RequestBody UserPort.UpdateUserDTO updatedUserDTO,
         BindingResult result
     ) throws Exception {
         if (result.hasErrors()) {
@@ -89,7 +89,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(
-            ApiResponse.<UserResponse>builder()
+            ApiResponse.<UserPort.UserResponse>builder()
                 .message(MessageKey.UPDATE_USER_SUCCESSFULLY)
                 .data(userMapper.toUserResponse(userService.updateUser(userId, updatedUserDTO)))
                 .isSuccess(true)

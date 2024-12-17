@@ -6,8 +6,8 @@ import com.lcaohoanq.nocket.constant.MessageKey;
 import com.lcaohoanq.nocket.domain.mail.IMailService;
 import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.domain.user.UserRepository;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
 import com.lcaohoanq.nocket.domain.wallet.WalletDTO.WalletResponse;
 import com.lcaohoanq.nocket.enums.EmailCategoriesEnum;
 import com.lcaohoanq.nocket.mapper.WalletMapper;
@@ -35,7 +35,7 @@ public class WalletService implements IWalletService {
 
     @Override
     public WalletResponse getByUserId(UUID userId) {
-        UserResponse existedUser = userService.findUserById(userId);
+        UserPort.UserResponse existedUser = userService.findUserById(userId);
         return walletMapper.toWalletResponse(walletRepository.findByUserId(existedUser.id()));
     }
 

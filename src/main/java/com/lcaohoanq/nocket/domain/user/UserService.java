@@ -5,7 +5,7 @@ import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
 import com.lcaohoanq.nocket.component.JwtTokenUtils;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
-import com.lcaohoanq.nocket.domain.auth.UpdatePasswordDTO;
+import com.lcaohoanq.nocket.domain.auth.AuthPort;
 import com.lcaohoanq.nocket.domain.avatar.Avatar;
 import com.lcaohoanq.nocket.domain.mail.IMailService;
 import com.lcaohoanq.nocket.domain.otp.OtpService;
@@ -51,7 +51,7 @@ public class UserService implements IUserService, PaginationConverter {
     private final UserMapper userMapper;
     
     @Override
-    public PageResponse<UserResponse> fetchUser(Pageable pageable) {
+    public PageResponse<UserPort.UserResponse> fetchUser(Pageable pageable) {
         Page<User> usersPage = userRepository.findAll(pageable);
         return mapPageResponse(
             usersPage,
@@ -101,7 +101,7 @@ public class UserService implements IUserService, PaginationConverter {
     }
 
     @Override
-    public UserResponse findUserById(UUID id) throws DataNotFoundException {
+    public UserPort.UserResponse findUserById(UUID id) throws DataNotFoundException {
         return userRepository.findById(id)
             .map(userMapper::toUserResponse)
             .orElseThrow(() -> new DataNotFoundException(
@@ -129,7 +129,7 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Transactional
     @Override
-    public User updateUser(UUID userId, UpdateUserDTO updatedUserDTO) throws Exception {
+    public User updateUser(UUID userId, UserPort.UpdateUserDTO updatedUserDTO) throws Exception {
         // Find the existing user by userId
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new DataNotFoundException(
@@ -240,7 +240,7 @@ public class UserService implements IUserService, PaginationConverter {
 
     @Override
     @Transactional
-    public void updatePassword(UpdatePasswordDTO updatePasswordDTO) throws Exception {
+    public void updatePassword(AuthPort.UpdatePasswordDTO updatePasswordDTO) throws Exception {
         User existingUser = userRepository.findByEmail(updatePasswordDTO.email())
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
@@ -274,7 +274,7 @@ public class UserService implements IUserService, PaginationConverter {
     @Override
     @Transactional
     public void softDeleteUser(UUID userId) throws DataNotFoundException {
-        UserResponse existingUser = findUserById(userId);
+        UserPort.UserResponse existingUser = findUserById(userId);
         if (!existingUser.isActive()) {
             throw new MalformDataException("User is already deleted");
         }
@@ -284,7 +284,7 @@ public class UserService implements IUserService, PaginationConverter {
     @Override
     @Transactional
     public void restoreUser(UUID userId) throws DataNotFoundException {
-        UserResponse existingUser = findUserById(userId);
+        UserPort.UserResponse existingUser = findUserById(userId);
         if (existingUser.isActive()) {
             throw new MalformDataException("User is already active");
         }

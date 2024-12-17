@@ -2,12 +2,13 @@ package com.lcaohoanq.nocket.domain.reaction;
 
 import com.lcaohoanq.nocket.api.ApiResponse;
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
-import com.lcaohoanq.nocket.domain.post.IPostService;
 import com.lcaohoanq.nocket.domain.post.Post;
 import com.lcaohoanq.nocket.domain.post.PostRepository;
+import com.lcaohoanq.nocket.domain.reaction.PostReactionPort.PostReactionResponse;
 import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.user.UserService;
+import com.lcaohoanq.nocket.mapper.PostReactionMapper;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,66 +32,77 @@ public class PostReactionController {
     private final PostRepository postRepository;
     private final IUserService userService;
     private final ReactionRepository reactionRepository;
+    private final PostReactionMapper postReactionMapper;
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<?>> getAllPostReactions() {
+    public ResponseEntity<ApiResponse<List<PostReactionResponse>>> getAllPostReactions() {
         return ResponseEntity.ok(
-            ApiResponse.builder()
+            ApiResponse.<List<PostReactionResponse>>builder()
                 .message("Get all post reactions success")
                 .statusCode(HttpStatus.OK.value())
                 .isSuccess(true)
-                .data(postReactionRepository.findAll())
+                .data(
+                    postReactionRepository
+                        .findAll()
+                        .stream()
+                        .map(postReactionMapper::toPostReactionResponse)
+                        .toList()
+                )
                 .build()
         );
     }
-    
+
     @GetMapping("/post")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<?>> getPostReactionsByPostId(
+    public ResponseEntity<ApiResponse<List<PostReactionResponse>>> getPostReactionsByPostId(
         @RequestParam UUID id
     ) {
         return ResponseEntity.ok(
-            ApiResponse.builder()
+            ApiResponse.<List<PostReactionResponse>>builder()
                 .message("Get all post reactions by post id success")
                 .statusCode(HttpStatus.OK.value())
                 .isSuccess(true)
-                .data(postReactionRepository.findByPostId(id))
+                .data(postReactionRepository.findByPostId(id).stream()
+                          .map(postReactionMapper::toPostReactionResponse).toList())
                 .build()
         );
     }
-    
+
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<?>> createPostReaction(
+    public ResponseEntity<ApiResponse<PostReactionResponse>> createPostReaction(
         @RequestBody PostReactionDTO postReactionDTO
     ) {
 
         Post existingPost = postRepository
-            .findById(postReactionDTO.postId()).orElseThrow(() -> new DataNotFoundException("Post not found"));
+            .findById(postReactionDTO.postId())
+            .orElseThrow(() -> new DataNotFoundException("Post not found"));
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername());
-        
+
         Reaction reaction = reactionRepository.findByReaction(postReactionDTO.reaction())
             .orElseThrow(() -> new DataNotFoundException("Reaction not found"));
-        
+
         return ResponseEntity.ok(
-            ApiResponse.builder()
+            ApiResponse.<PostReactionResponse>builder()
                 .message("Create post reaction success")
                 .statusCode(HttpStatus.OK.value())
                 .isSuccess(true)
-                .data(postReactionRepository.save(
-                    PostReaction.builder()
-                        .post(existingPost)
-                        .user(user)
-                        .reaction(reaction)
-                        .build()
-                ))
+                .data(
+                    postReactionMapper.toPostReactionResponse(
+                        postReactionRepository.save(
+                            PostReaction.builder()
+                                .post(existingPost)
+                                .user(user)
+                                .reaction(reaction)
+                                .build()
+                        )))
                 .build()
         );
     }
-    
-    
+
+
 }

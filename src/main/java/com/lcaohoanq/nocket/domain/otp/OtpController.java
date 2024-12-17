@@ -3,9 +3,9 @@ package com.lcaohoanq.nocket.domain.otp;
 import com.lcaohoanq.nocket.api.ApiResponse;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
+import com.lcaohoanq.nocket.domain.auth.AuthPort;
 import com.lcaohoanq.nocket.domain.auth.AuthService;
 import com.lcaohoanq.nocket.domain.auth.OtpResponse;
-import com.lcaohoanq.nocket.domain.auth.VerifyUserDTO;
 import com.lcaohoanq.nocket.domain.mail.MailController;
 import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
@@ -45,7 +45,7 @@ public class OtpController {
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<OtpResponse>> verifiedUserNotLogin(
-        @Valid @RequestBody VerifyUserDTO verifyUserDTO,
+        @Valid @RequestBody AuthPort.VerifyUserDTO verifyUserDTO,
         BindingResult result
     ) throws Exception {
         if (result.hasErrors()) {

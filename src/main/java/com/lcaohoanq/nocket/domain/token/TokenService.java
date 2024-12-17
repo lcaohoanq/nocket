@@ -1,7 +1,7 @@
 package com.lcaohoanq.nocket.domain.token;
 
 import com.lcaohoanq.nocket.component.JwtTokenUtils;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.exception.ExpiredTokenException;
 import com.lcaohoanq.nocket.exception.TokenNotFoundException;
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
@@ -77,7 +77,7 @@ public class TokenService implements ITokenService{
     @Transactional
     @Override
     public Token addToken(UUID userId, String token, boolean isMobileDevice) {
-        UserResponse existingUser = userService.findUserById(userId);
+        UserPort.UserResponse existingUser = userService.findUserById(userId);
         List<Token> userTokens = tokenRepository.findByUserId(existingUser.id());
         int tokenCount = userTokens.size();
         // Số lượng token vượt quá giới hạn, xóa một token cũ

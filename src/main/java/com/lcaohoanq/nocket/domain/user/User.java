@@ -1,5 +1,6 @@
 package com.lcaohoanq.nocket.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -82,6 +83,7 @@ public class User extends BaseEntity implements UserDetails {
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference //to prevent infinite loop
+    @JsonIgnore
     private Wallet wallet;
 
     @Enumerated(EnumType.ORDINAL)
@@ -115,7 +117,8 @@ public class User extends BaseEntity implements UserDetails {
     private List<Friendship> receivedFriendships = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonBackReference(value = "user-reactions")
+    @JsonIgnore
     private List<PostReaction> reactions = new ArrayList<>();
 
     //Spring Security

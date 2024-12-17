@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.lcaohoanq.nocket.domain.token.TokenResponse;
-import com.lcaohoanq.nocket.domain.user.UserResponse;
+import com.lcaohoanq.nocket.domain.user.UserPort;
 
 @JsonPropertyOrder({
     "token",
@@ -14,5 +14,5 @@ import com.lcaohoanq.nocket.domain.user.UserResponse;
 public record LoginResponse(
     TokenResponse token,
     //user's detail
-    UserResponse user
+    UserPort.UserResponse user
 ) {}

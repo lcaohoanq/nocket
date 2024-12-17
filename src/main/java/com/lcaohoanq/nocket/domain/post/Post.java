@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
+import com.lcaohoanq.nocket.constant.BusinessNumber;
 import com.lcaohoanq.nocket.domain.reaction.PostReaction;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.enums.PostType;
@@ -22,6 +23,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -44,6 +47,13 @@ import lombok.experimental.SuperBuilder;
 public class Post extends BaseEntity {
 
     private PostType postType;
+    
+    @Size(
+        max = BusinessNumber.MAXIMUM_POST_CAPTION_LENGTH,
+        message = """
+            Caption must be less than or equal to {max} characters.
+            """
+    )
     private String caption;
     
     @Embedded
@@ -54,7 +64,7 @@ public class Post extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "post-reactions")
     private List<PostReaction> reactions = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

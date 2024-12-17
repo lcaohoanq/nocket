@@ -1,6 +1,7 @@
 package com.lcaohoanq.nocket.domain.reaction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lcaohoanq.nocket.base.entity.BaseEntity;
 import com.lcaohoanq.nocket.enums.EReaction;
@@ -33,6 +34,7 @@ public class Reaction extends BaseEntity {
     private EReaction reaction;
 
     @OneToMany(mappedBy = "reaction", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonBackReference(value = "reaction-reactions")
+//    @JsonIgnore
     private List<PostReaction> reactions = new ArrayList<>();
 }
