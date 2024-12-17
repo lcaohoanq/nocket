@@ -15,6 +15,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,6 +45,7 @@ import lombok.experimental.SuperBuilder;
     @AttributeOverride(name = "createdAt", column = @Column(name = "post_created_at")),
     @AttributeOverride(name = "updatedAt", column = @Column(name = "post_updated_at"))
 })
+@EntityListeners(PostListener.class)
 public class Post extends BaseEntity {
 
     private PostType postType;

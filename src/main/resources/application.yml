@@ -90,6 +90,7 @@ jwt:
 
 logging:
   level:
+    root: info
     org.springframework: DEBUG
     springframework.security: DEBUG
     org.hibernate: DEBUG

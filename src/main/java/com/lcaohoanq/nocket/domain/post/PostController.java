@@ -1,8 +1,11 @@
 package com.lcaohoanq.nocket.domain.post;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lcaohoanq.nocket.api.ApiResponse;
+import com.lcaohoanq.nocket.api.PageResponse;
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException;
 import com.lcaohoanq.nocket.domain.asset.FileStoreService;
+import com.lcaohoanq.nocket.domain.cache.IPostRedisService;
 import com.lcaohoanq.nocket.domain.friendship.Friendship;
 import com.lcaohoanq.nocket.domain.friendship.FriendshipRepository;
 import com.lcaohoanq.nocket.domain.post.PostPort.PostResponse;
@@ -12,6 +15,7 @@ import com.lcaohoanq.nocket.enums.FriendShipStatus;
 import com.lcaohoanq.nocket.enums.PostType;
 import com.lcaohoanq.nocket.mapper.PostMapper;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
+import com.lcaohoanq.nocket.util.PaginationConverter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +23,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,27 +50,39 @@ public class PostController {
     private final FriendshipRepository friendshipRepository;
     private final FileStoreService fileStoreService;
     private final PostMapper postMapper;
+    private final PaginationConverter paginationConverter;
+    private final IPostRedisService postRedisService;
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<List<PostPort.PostResponse>>> getAllPosts() {
-        return ResponseEntity.ok().body(
-            ApiResponse.<List<PostResponse>>builder()
-                .message("Successfully get all posts")
-                .isSuccess(true)
-                .statusCode(HttpStatus.OK.value())
-                .data(postRepository.findAll().stream().map(postMapper::toPostResponse).toList())
-                .build()
+    public ResponseEntity<PageResponse<PostResponse>> getAll(
+        @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer limit
+    ) {
+        if (page == null || page < 0 || limit == null || limit < 0) {
+            throw new IllegalArgumentException("Page and limit must be greater than 0.");
+        }
+        
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+
+        // Directly return the PageResponse<PostResponse> created by mapPageResponse
+        PageResponse<PostResponse> pageResponse = paginationConverter.mapPageResponse(
+            postRepository.findAll(pageRequest),
+            pageRequest,
+            postMapper::toPostResponse,
+            "Successfully get all posts"
         );
+
+        return ResponseEntity.ok().body(pageResponse);
     }
 
     @GetMapping("/detail")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<PostPort.PostResponse>> getPostById(
+    public ResponseEntity<ApiResponse<PostResponse>> getPostById(
         @RequestParam UUID id
     ) {
         return ResponseEntity.ok().body(
-            ApiResponse.<PostPort.PostResponse>builder()
+            ApiResponse.<PostResponse>builder()
                 .message("Successfully get post by id")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
@@ -77,13 +95,13 @@ public class PostController {
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<List<PostPort.PostResponse>>> getPostsOfUser(
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsOfUser(
     ) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername());
         return ResponseEntity.ok().body(
-            ApiResponse.<List<PostPort.PostResponse>>builder()
+            ApiResponse.<List<PostResponse>>builder()
                 .message("Successfully get all posts of user")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
@@ -95,7 +113,7 @@ public class PostController {
 
     @GetMapping("/user-and-friends")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<List<PostPort.PostResponse>>> getPostsOfUserAndFriends() {
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsOfUserAndFriends() {
         // Get current authenticated user
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
@@ -123,7 +141,7 @@ public class PostController {
         posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
 
         return ResponseEntity.ok().body(
-            ApiResponse.<List<PostPort.PostResponse>>builder()
+            ApiResponse.<List<PostResponse>>builder()
                 .message("Successfully retrieved posts for user and friends")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())
@@ -137,7 +155,7 @@ public class PostController {
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    public ResponseEntity<ApiResponse<PostPort.PostResponse>> createPost(
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(
         @ModelAttribute("file") MultipartFile file
     ) throws IOException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
@@ -148,7 +166,7 @@ public class PostController {
             .storeFile(fileStoreService.validateProductImage(file));
 
         return ResponseEntity.ok().body(
-            ApiResponse.<PostPort.PostResponse>builder()
+            ApiResponse.<PostResponse>builder()
                 .message("Successfully upload post")
                 .isSuccess(true)
                 .statusCode(HttpStatus.OK.value())

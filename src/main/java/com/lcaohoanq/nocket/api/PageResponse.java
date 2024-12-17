@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.lcaohoanq.nocket.metadata.PaginationMeta;
 import java.util.Collection;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @JsonPropertyOrder({
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
     "is_success",
 })
 @NoArgsConstructor
+@Getter
 public class PageResponse<T> extends ApiResponse<Collection<T>> {
     @JsonProperty("pagination")
     private PaginationMeta pagination;
