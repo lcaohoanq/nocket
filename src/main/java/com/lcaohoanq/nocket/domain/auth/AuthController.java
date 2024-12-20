@@ -4,20 +4,19 @@ import com.lcaohoanq.nocket.annotation.RetryAndBlock;
 import com.lcaohoanq.nocket.api.ApiResponse;
 import com.lcaohoanq.nocket.component.LocalizationUtils;
 import com.lcaohoanq.nocket.constant.MessageKey;
-import com.lcaohoanq.nocket.domain.token.Token;
-import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.IUserService;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException;
-import com.lcaohoanq.nocket.mapper.TokenMapper;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import com.lcaohoanq.nocket.util.Identifiable;
 import io.micrometer.core.annotation.Timed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${api.prefix}/auth")
 @RequiredArgsConstructor
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController implements Identifiable {
 
-    private final IUserService userService;
-    private final LocalizationUtils localizationUtils;
-    private final TokenService tokenService;
-    private final HttpServletRequest request;
-    private final IAuthService authService;
-    private final UserMapper userMapper;
-    private final TokenMapper tokenMapper;
+    IUserService userService;
+    LocalizationUtils localizationUtils;
+    HttpServletRequest request;
+    IAuthService authService;
+    UserMapper userMapper;
 
     @Timed(
         value = "custom.login.requests",
@@ -53,33 +51,24 @@ public class AuthController implements Identifiable {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
         @RequestBody @Valid AuthPort.UserLoginDTO userLoginDTO,
-        BindingResult result,
-        HttpServletRequest request
+        BindingResult result
     ) throws Exception {
 
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(result);
         }
 
-        String token = authService.login(userLoginDTO.email(), userLoginDTO.password());
-        String userAgent = request.getHeader("User-Agent");
-        UserPort.UserResponse userDetail = authService.getUserDetailsFromToken(token);
-        Token jwtToken = tokenService.addToken(userDetail.id(), token, isMobileDevice(userAgent));
-
-        log.info("User logged in successfully");
-
-        LoginResponse response = new LoginResponse(
-            tokenMapper.toTokenResponse(jwtToken),
-            userDetail
-        );
-
-        return ResponseEntity.ok(ApiResponse.<LoginResponse>builder()
-                                     .message(localizationUtils.getLocalizedMessage(
-                                         MessageKey.LOGIN_SUCCESSFULLY))
-                                     .statusCode(HttpStatus.OK.value())
-                                     .isSuccess(true)
-                                     .data(response)
-                                     .build());
+        return ResponseEntity.ok(
+            ApiResponse.<LoginResponse>builder()
+                .message(localizationUtils.getLocalizedMessage(MessageKey.LOGIN_SUCCESSFULLY))
+                .statusCode(HttpStatus.OK.value())
+                .isSuccess(true)
+                .data(
+                    authService.login(
+                        userLoginDTO.email(),
+                        userLoginDTO.password())
+                )
+                .build());
     }
 
     @Timed(

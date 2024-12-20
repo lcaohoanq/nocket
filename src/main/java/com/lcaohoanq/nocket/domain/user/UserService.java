@@ -27,7 +27,9 @@ import com.lcaohoanq.nocket.util.PaginationConverter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,16 +41,17 @@ import org.thymeleaf.context.Context;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService implements IUserService, PaginationConverter {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final SocialAccountRepository socialAccountRepository;
-    private final LocalizationUtils localizationUtils;
-    private final IMailService mailService;
-    private final OtpService otpService;
-    private final UserMapper userMapper;
+    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+    JwtTokenUtils jwtTokenUtils;
+    SocialAccountRepository socialAccountRepository;
+    LocalizationUtils localizationUtils;
+    IMailService mailService;
+    OtpService otpService;
+    UserMapper userMapper;
     
     @Override
     public PageResponse<UserPort.UserResponse> fetchUser(Pageable pageable) {

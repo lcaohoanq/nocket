@@ -9,7 +9,9 @@ import com.lcaohoanq.nocket.mapper.UserMapper;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -31,11 +33,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserController {
 
-    private final IUserService userService;
-    private final UserMapper userMapper;
+    IUserService userService;
+    UserMapper userMapper;
 
     @GetMapping("")
     //@PreAuthorize("permitAll()")

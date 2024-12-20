@@ -10,9 +10,11 @@ import com.lcaohoanq.nocket.domain.mail.IMailService;
 import com.lcaohoanq.nocket.domain.otp.Otp;
 import com.lcaohoanq.nocket.domain.otp.OtpService;
 import com.lcaohoanq.nocket.domain.socialaccount.SocialAccountRepository;
+import com.lcaohoanq.nocket.domain.token.Token;
 import com.lcaohoanq.nocket.domain.token.TokenService;
 import com.lcaohoanq.nocket.domain.user.User;
 import com.lcaohoanq.nocket.domain.user.UserPort;
+import com.lcaohoanq.nocket.domain.user.UserPort.UserResponse;
 import com.lcaohoanq.nocket.domain.user.UserRepository;
 import com.lcaohoanq.nocket.domain.user.UserService;
 import com.lcaohoanq.nocket.domain.wallet.Wallet;
@@ -24,8 +26,10 @@ import com.lcaohoanq.nocket.enums.UserStatus;
 import com.lcaohoanq.nocket.exception.ExpiredTokenException;
 import com.lcaohoanq.nocket.exception.MalformBehaviourException;
 import com.lcaohoanq.nocket.exception.PasswordWrongFormatException;
+import com.lcaohoanq.nocket.mapper.TokenMapper;
 import com.lcaohoanq.nocket.mapper.UserMapper;
 import com.lcaohoanq.nocket.metadata.MediaMeta;
+import com.lcaohoanq.nocket.util.Identifiable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +38,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,21 +54,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService implements IAuthService {
-
-
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final SocialAccountRepository socialAccountRepository;
-    private final LocalizationUtils localizationUtils;
-    private final IMailService mailService;
-    private final TokenService tokenService;
-    private final OtpService otpService;
-    private final UserService userService;
-    private final WalletRepository walletRepository;
-    private final UserMapper userMapper;
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AuthService implements IAuthService, Identifiable {
+    
+    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+    AuthenticationManager authenticationManager;
+    JwtTokenUtils jwtTokenUtils;
+    SocialAccountRepository socialAccountRepository;
+    LocalizationUtils localizationUtils;
+    IMailService mailService;
+    TokenService tokenService;
+    OtpService otpService;
+    UserService userService;
+    WalletRepository walletRepository;
+    UserMapper userMapper;
+    TokenMapper tokenMapper;
+    HttpServletRequest request;
 
     @Override
     @Transactional
@@ -151,21 +159,41 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public String login(String email, String password) throws Exception {
+    public LoginResponse login(String email, String password) throws Exception {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             throw new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.WRONG_PHONE_PASSWORD));
         }
+        
         User existingUser = optionalUser.get();
 
         existingUser.setLastLoginTimestamp(LocalDateTime.now());
         userRepository.save(existingUser);
-
+        
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(email, password, existingUser.getAuthorities());
+            new UsernamePasswordAuthenticationToken(
+                email,
+                password,
+                existingUser.getAuthorities());
+        
         authenticationManager.authenticate(authenticationToken);
-        return jwtTokenUtils.generateToken(existingUser);
+        
+        String token = jwtTokenUtils.generateToken(existingUser);
+        
+        UserResponse userDetail = getUserDetailsFromToken(token);
+        
+        Token jwtToken = tokenService.addToken(
+            userDetail.id(),
+            token,
+            isMobileDevice(request.getHeader("User-Agent")));
+
+        log.info("New user logged in successfully");
+        
+        return new LoginResponse(
+            tokenMapper.toTokenResponse(jwtToken),
+            userDetail
+        );
     }
 
     //Token
