@@ -18,7 +18,7 @@ import org.thymeleaf.context.Context;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ForgotPasswordService implements IForgotPasswordService{
+public class ForgotPasswordService implements IForgotPasswordService {
 
     private final IMailService mailService;
     private final IOtpService otpService;
@@ -36,14 +36,13 @@ public class ForgotPasswordService implements IForgotPasswordService{
                              EmailCategoriesEnum.FORGOT_PASSWORD.getType(),
                              context);
 
-        Otp otpEntity = Otp.builder()
-            .email(existingUser.getEmail())
-            .otp(otp)
-            .expiredAt(LocalDateTime.now().plusMinutes(5))
-            .isUsed(false)
-            .isExpired(false)
-            .build();
-
+        Otp otpEntity = new Otp();
+        otpEntity.setOtp(otp);
+        otpEntity.setEmail(existingUser.getEmail());
+        otpEntity.setExpiredAt(LocalDateTime.now().plusMinutes(5));
+        otpEntity.setUsed(false);
+        otpEntity.setExpired(false);
+        
         otpService.createOtp(otpEntity);
     }
 }

@@ -21,8 +21,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.formula.functions.Vlookup;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -126,7 +128,7 @@ public class PostController {
         );
 
         List<User> friends = friendships.stream()
-            .map(f -> f.getUser1().equals(currentUser) ? f.getUser2() : f.getUser1())
+            .map(f -> Objects.equals(f.getUser1(), currentUser) ? f.getUser2() : f.getUser1())
             .toList();
 
         // Create a list that includes the current user and their friends
@@ -165,6 +167,18 @@ public class PostController {
         String filename = fileStoreService
             .storeFile(fileStoreService.validateProductImage(file));
 
+        MediaMeta mediaMeta = new MediaMeta();
+        mediaMeta.setFileName(filename);
+        mediaMeta.setImageUrl(filename);
+        
+        Post post = new Post();
+        post.setPostType(PostType.IMAGE);
+        post.setCaption("This is a caption");
+        post.setMediaMeta(mediaMeta);
+        post.setUser(user);
+        post.setCreatedAt(LocalDateTime.now());
+        post.setUpdatedAt(LocalDateTime.now());
+
         return ResponseEntity.ok().body(
             ApiResponse.<PostResponse>builder()
                 .message("Successfully upload post")
@@ -172,24 +186,7 @@ public class PostController {
                 .statusCode(HttpStatus.OK.value())
                 .data(
                     postMapper.toPostResponse(
-                        postRepository.save(
-                            Post.builder()
-                                .postType(PostType.IMAGE)
-                                .caption("Muon duoc ai do tang")
-                                .mediaMeta(
-                                    MediaMeta.builder()
-                                        .fileName(filename)
-                                        .fileSize(file.getSize())
-                                        .imageUrl(filename)
-                                        .mimeType(file.getContentType())
-                                        .videoUrl(null)
-                                        .build()
-                                )
-                                .user(user)
-                                .createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
-                                .build()
-                        )
+                        postRepository.save(post)
                     )
                 )
                 .build()

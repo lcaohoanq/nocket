@@ -33,19 +33,19 @@ public class ForgotPasswordController {
 
     @GetMapping("")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<ApiResponse<ForgotPasswordResponse>> forgotPassword(
+    public ResponseEntity<ApiResponse<AuthPort.ForgotPasswordResponse>> forgotPassword(
         @Validated @RequestParam String toEmail
     ) throws MessagingException {
         User user = (User) request.getAttribute("validatedEmail"); //get from aop
 
         forgotPasswordService.sendEmailOtp(user);
 
-        ForgotPasswordResponse response =
-            new ForgotPasswordResponse(
+        AuthPort.ForgotPasswordResponse response =
+            new AuthPort.ForgotPasswordResponse(
                 "Forgot password email sent successfully to " + user.getEmail());
 
-        return ResponseEntity.ok(ApiResponse.<ForgotPasswordResponse>builder()
-                                     .message(response.message())
+        return ResponseEntity.ok(ApiResponse.<AuthPort.ForgotPasswordResponse>builder()
+                                     .message(response.getMessage())
                                      .statusCode(HttpStatus.OK.value())
                                      .isSuccess(true)
                                      .build());

@@ -64,13 +64,12 @@ public class MailService implements IMailService {
             );
 
             // Create OTP record
-            Otp otpEntity = Otp.builder()
-                .email(user.getEmail())
-                .otp(otp)
-                .expiredAt(LocalDateTime.now().plusMinutes(5))
-                .isUsed(false)
-                .isExpired(false)
-                .build();
+            Otp otpEntity = new Otp();
+            otpEntity.setOtp(otp);
+            otpEntity.setEmail(user.getEmail());
+            otpEntity.setExpiredAt(LocalDateTime.now().plusMinutes(5));
+            otpEntity.setUsed(false);
+            otpEntity.setExpired(false);
 
             otpService.createOtp(otpEntity);
             return user;  // Return the user for chaining

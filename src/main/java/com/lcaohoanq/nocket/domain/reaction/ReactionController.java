@@ -60,16 +60,16 @@ public class ReactionController {
     public ResponseEntity<ApiResponse<ReactionPort.ReactionResponse>> generateReaction(
         @RequestBody ReactionPort.ReactionDTO reaction
     ) {
+
+        Reaction newReaction = new Reaction();
+        newReaction.setReaction(reaction.reaction());
+
         return ResponseEntity.ok(
             ApiResponse.<ReactionPort.ReactionResponse>builder()
                 .message("Generate reaction success")
                 .statusCode(HttpStatus.OK.value())
                 .isSuccess(true)
-                .data(reactionMapper.toReactionResponse(reactionRepository.save(
-                    Reaction.builder()
-                        .reaction(reaction.reaction())
-                        .build()
-                )))
+                .data(reactionMapper.toReactionResponse(reactionRepository.save(newReaction)))
                 .build()
         );
     }

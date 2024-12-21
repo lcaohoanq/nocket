@@ -126,11 +126,11 @@ public class FriendshipController {
         }
 
         // Create new friendship
-        Friendship newFriendship = Friendship.builder()
-            .user1(requester)
-            .user2(addressee)
-            .status(FriendShipStatus.PENDING)
-            .build();
+        Friendship newFriendship = new Friendship();
+        newFriendship.setUser1(requester);
+        newFriendship.setUser2(addressee);
+        newFriendship.setStatus(FriendShipStatus.PENDING);
+        
         newFriendship.normalizeUsers(); // Ensure consistent user order
 
         return ResponseEntity.ok().body(

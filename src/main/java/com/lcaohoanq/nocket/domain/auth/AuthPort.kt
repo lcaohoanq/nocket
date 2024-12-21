@@ -1,8 +1,13 @@
 package com.lcaohoanq.nocket.domain.auth
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.lcaohoanq.nocket.constant.Regex
+import com.lcaohoanq.nocket.domain.token.TokenResponse
+import com.lcaohoanq.nocket.domain.user.UserPort
 import com.lcaohoanq.nocket.enums.Country
 import com.lcaohoanq.nocket.enums.Currency
 import com.lcaohoanq.nocket.enums.Gender
@@ -77,6 +82,15 @@ interface AuthPort {
         @NotBlank(message = "Email is required") val email: String,
         @JsonProperty("otp")
         @NotBlank(message = "OTP is required") val otp: String
+    )
+
+    data class ForgotPasswordResponse(val message: String)
+
+    @JsonPropertyOrder("token", "user")
+    @JsonInclude(Include.NON_NULL)
+    data class LoginResponse(
+        val token: TokenResponse,
+        val user: UserPort.UserResponse
     )
 
 }

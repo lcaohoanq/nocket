@@ -86,6 +86,11 @@ public class PostReactionController {
         Reaction reaction = reactionRepository.findByReaction(postReactionDTO.reaction())
             .orElseThrow(() -> new DataNotFoundException("Reaction not found"));
 
+        PostReaction postReaction = new PostReaction();
+        postReaction.setPost(existingPost);
+        postReaction.setUser(user);
+        postReaction.setReaction(reaction);
+
         return ResponseEntity.ok(
             ApiResponse.<PostReactionResponse>builder()
                 .message("Create post reaction success")
@@ -93,13 +98,7 @@ public class PostReactionController {
                 .isSuccess(true)
                 .data(
                     postReactionMapper.toPostReactionResponse(
-                        postReactionRepository.save(
-                            PostReaction.builder()
-                                .post(existingPost)
-                                .user(user)
-                                .reaction(reaction)
-                                .build()
-                        )))
+                        postReactionRepository.save(postReaction)))
                 .build()
         );
     }

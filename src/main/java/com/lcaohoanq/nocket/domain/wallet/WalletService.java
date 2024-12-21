@@ -51,12 +51,12 @@ public class WalletService implements IWalletService {
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
             ));
-        existingUser.getWallet().setBalance(existingUser.getWallet().getBalance() + payment);
+        existingUser.getWallet().balance = existingUser.getWallet().balance + payment;
 
         Context context = new Context();
         context.setVariable("name", existingUser.getName());
         context.setVariable("amount", payment);
-        context.setVariable("balance", existingUser.getWallet().getBalance());
+        context.setVariable("balance", existingUser.getWallet().balance);
 
         try {
             mailService.sendMail(
@@ -70,7 +70,8 @@ public class WalletService implements IWalletService {
             throw new MessagingException(String.format("Failed to send email to %s", existingUser.getEmail()));
         }
 
-        log.info("User {} balance updated. New balance: {}", userId, existingUser.getWallet().getBalance());
+        log.info("User {} balance updated. New balance: {}", userId,
+                 existingUser.getWallet().balance);
         userRepository.save(existingUser);
     }
     

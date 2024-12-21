@@ -44,15 +44,14 @@ public class MailController {
                              EmailCategoriesEnum.OTP.getType(),
                              context);
         MailResponse response = new MailResponse("Mail sent successfully");
-
-        Otp otpEntity = Otp.builder()
-            .email(toEmail)
-            .otp(otp)
-            .expiredAt(LocalDateTime.now().plusMinutes(5))
-            .isUsed(false)
-            .isExpired(false)
-            .build();
-
+        
+        Otp otpEntity = new Otp();
+        otpEntity.setOtp(otp);
+        otpEntity.setEmail(toEmail);
+        otpEntity.setExpiredAt(LocalDateTime.now().plusMinutes(5));
+        otpEntity.setUsed(false);
+        otpEntity.setExpired(false);
+        
         otpService.createOtp(otpEntity);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

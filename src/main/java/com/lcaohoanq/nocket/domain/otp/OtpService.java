@@ -15,13 +15,12 @@ public class OtpService implements IOtpService{
 
     @Override
     public Otp createOtp(Otp otp) {
-        Otp newOtp = Otp.builder()
-                .email(otp.getEmail())
-                .otp(otp.getOtp())
-                .expiredAt(otp.getExpiredAt())
-                .isUsed(otp.isUsed())
-                .isExpired(otp.isExpired())
-                .build();
+        Otp newOtp = new Otp();
+        newOtp.setOtp(otp.getOtp());
+        newOtp.setEmail(otp.getEmail());
+        newOtp.setExpiredAt(otp.getExpiredAt());
+        newOtp.setUsed(otp.isUsed());
+        newOtp.setExpired(otp.isExpired());
         return otpRepository.save(newOtp);
     }
 

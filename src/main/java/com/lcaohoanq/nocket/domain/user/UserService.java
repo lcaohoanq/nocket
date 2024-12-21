@@ -73,31 +73,21 @@ public class UserService implements IUserService, PaginationConverter {
         if (optionalUser.isEmpty()) {
             // Register new user
 
-            User newUser = User.builder()
-                .name(name)
-                .email(email)
-                .avatars(
-                    List.of(
-                        Avatar.builder()
-                            .mediaMeta(
-                                MediaMeta.builder()
-                                    .imageUrl(avatarUrl)
-                                    .build()
-                            )
-                            .build()
-                    )
-                )
-                .role(UserRole.MEMBER)
-                .build();
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setName(name);
+            newUser.setRole(UserRole.MEMBER);
+            newUser.setStatus(UserStatus.VERIFIED);
+            newUser.setActive(true);
 
-            SocialAccount newSocialAccount = SocialAccount.builder()
-                .providerName(ProviderName.GOOGLE)
-                .name(name)
-                .email(email)
-                .build();
-
-            user = userRepository.save(newUser);
-            socialAccountRepository.save(newSocialAccount);
+//            SocialAccount newSocialAccount = SocialAccount.builder()
+//                .providerName(ProviderName.GOOGLE)
+//                .name(name)
+//                .email(email)
+//                .build();
+//
+//            user = userRepository.save(newUser);
+//            socialAccountRepository.save(newSocialAccount);
         }
 
         return jwtTokenUtils.generateToken(user);
@@ -205,7 +195,7 @@ public class UserService implements IUserService, PaginationConverter {
             }
             String newPassword = updatedUserDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(newPassword);
-            existingUser.setPassword(encodedPassword);
+            existingUser.setHashedPassword(encodedPassword);
         }
         //existingUser.setRole(updatedRole);
         // Save the updated user
@@ -261,7 +251,7 @@ public class UserService implements IUserService, PaginationConverter {
             throw new PermissionDeniedException("Cannot change password for this account");
         }
 
-        existingUser.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
+        existingUser.setHashedPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
 
         mailService.sendMail(
             existingUser.getEmail(),

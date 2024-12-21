@@ -104,7 +104,7 @@ public class JwtTokenUtils {
             Token existingToken = tokenRepository.findByToken(token);
             
             // Check token existence and revocation
-            if (existingToken == null || existingToken.isRevoked()) {
+            if (existingToken == null || Boolean.TRUE.equals(existingToken.getRevoked())) {
                 throw new JwtAuthenticationException("Token is invalid or has been revoked");
             }
 
