@@ -36,7 +36,7 @@ public class WalletService implements IWalletService {
     @Override
     public WalletResponse getByUserId(UUID userId) {
         UserPort.UserResponse existedUser = userService.findUserById(userId);
-        return walletMapper.toWalletResponse(walletRepository.findByUserId(existedUser.id()));
+        return walletMapper.toWalletResponse(walletRepository.findByUserId(existedUser.getId()));
     }
 
     @Transactional

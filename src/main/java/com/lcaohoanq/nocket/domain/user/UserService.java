@@ -52,7 +52,7 @@ public class UserService implements IUserService, PaginationConverter {
     IMailService mailService;
     OtpService otpService;
     UserMapper userMapper;
-    
+
     @Override
     public PageResponse<UserPort.UserResponse> fetchUser(Pageable pageable) {
         Page<User> usersPage = userRepository.findAll(pageable);
@@ -140,7 +140,7 @@ public class UserService implements IUserService, PaginationConverter {
             ));
 
         // Check if the email is being changed and if it already exists for another user
-        String newEmail = updatedUserDTO.email();
+        String newEmail = updatedUserDTO.getEmail();
 
         if (newEmail != null && !newEmail.isEmpty()) {
             // Check if the new email is different from the current user's email
@@ -161,7 +161,7 @@ public class UserService implements IUserService, PaginationConverter {
         }
 
         // Check if the phoneNumber number is being changed and if it already exists for another user
-        String newPhoneNumber = updatedUserDTO.phoneNumber();
+        String newPhoneNumber = updatedUserDTO.getPhoneNumber();
 
         if (newPhoneNumber != null && !newPhoneNumber.isEmpty()) {
             // Check if the new phoneNumber number is different from the current user's phoneNumber number
@@ -184,26 +184,26 @@ public class UserService implements IUserService, PaginationConverter {
         }
 
         // Update user information based on the DTO
-        if (updatedUserDTO.name() != null) {
-            existingUser.setName(updatedUserDTO.name());
+        if (updatedUserDTO.getName() != null) {
+            existingUser.setName(updatedUserDTO.getName());
         }
-        if (updatedUserDTO.status() != null) {
-            existingUser.setStatus(UserStatus.valueOf(updatedUserDTO.status()));
+        if (updatedUserDTO.getStatus() != null) {
+            existingUser.setStatus(UserStatus.valueOf(updatedUserDTO.getStatus()));
         }
-        if (updatedUserDTO.dob() != null) {
-            existingUser.setDateOfBirth(updatedUserDTO.dob());
+        if (updatedUserDTO.getDob() != null) {
+            existingUser.setDateOfBirth(updatedUserDTO.getDob());
         }
 //        if (updatedUserDTO.avatar() != null) {
 //            existingUser.setAvatars(updatedUserDTO.avatar());
 //        }
 
         // Update the password if it is provided in the DTO
-        if (updatedUserDTO.password() != null
-            && !updatedUserDTO.password().isEmpty()) {
-            if (!updatedUserDTO.password().equals(updatedUserDTO.confirmPassword())) {
+        if (updatedUserDTO.getPassword() != null
+            && !updatedUserDTO.getPassword().isEmpty()) {
+            if (!updatedUserDTO.getPassword().equals(updatedUserDTO.getConfirmPassword())) {
                 throw new DataNotFoundException("Password and confirm password must be the same");
             }
-            String newPassword = updatedUserDTO.password();
+            String newPassword = updatedUserDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(newPassword);
             existingUser.setPassword(encodedPassword);
         }
@@ -244,7 +244,7 @@ public class UserService implements IUserService, PaginationConverter {
     @Override
     @Transactional
     public void updatePassword(AuthPort.UpdatePasswordDTO updatePasswordDTO) throws Exception {
-        User existingUser = userRepository.findByEmail(updatePasswordDTO.email())
+        User existingUser = userRepository.findByEmail(updatePasswordDTO.getEmail())
             .orElseThrow(() -> new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
             ));
@@ -261,7 +261,7 @@ public class UserService implements IUserService, PaginationConverter {
             throw new PermissionDeniedException("Cannot change password for this account");
         }
 
-        existingUser.setPassword(passwordEncoder.encode(updatePasswordDTO.newPassword()));
+        existingUser.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
 
         mailService.sendMail(
             existingUser.getEmail(),
@@ -321,8 +321,8 @@ public class UserService implements IUserService, PaginationConverter {
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
-    
-    @Override 
+
+    @Override
     public Boolean existsByPhoneNumber(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }

@@ -56,7 +56,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService implements IAuthService, Identifiable {
-    
+
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
@@ -76,21 +76,21 @@ public class AuthService implements IAuthService, Identifiable {
     @Transactional
     public User register(AuthPort.AccountRegisterDTO accountRegisterDTO) throws Exception {
 
-        if (!accountRegisterDTO.password().matches(Regex.PASSWORD_REGEX)) {
+        if (!accountRegisterDTO.getPassword().matches(Regex.PASSWORD_REGEX)) {
             throw new PasswordWrongFormatException(
                 "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
         }
 
-        if (!accountRegisterDTO.password().equals(accountRegisterDTO.confirmPassword())) {
+        if (!accountRegisterDTO.getPassword().equals(accountRegisterDTO.getConfirmPassword())) {
             throw new MalformBehaviourException("Password and confirm password must be the same");
         }
 
-        String email = accountRegisterDTO.email();
+        String email = accountRegisterDTO.getEmail();
         if (userRepository.existsByEmail(email)) {
             throw new DataIntegrityViolationException("Email already exists");
         }
 
-        if (userRepository.existsByPhoneNumber(accountRegisterDTO.phoneNumber())) {
+        if (userRepository.existsByPhoneNumber(accountRegisterDTO.getPhoneNumber())) {
             throw new DataIntegrityViolationException("Phone number already exists");
         }
 
@@ -99,26 +99,26 @@ public class AuthService implements IAuthService, Identifiable {
                 RequestContextHolder.getRequestAttributes())).getRequest();
         String acceptLanguage = request.getHeader("Accept-Language");
         String preferredLanguage = String.valueOf(
-            Optional.ofNullable(accountRegisterDTO.preferredLanguage())
+            Optional.of(accountRegisterDTO.getPreferredLanguage())
                 .orElse(acceptLanguage == null || acceptLanguage.isEmpty()
                             ? Country.UNITED_STATES
                             : Country.valueOf(acceptLanguage.toUpperCase())));
 
         String preferredCurrency = String.valueOf(
-            Optional.ofNullable(accountRegisterDTO.preferredCurrency())
+            Optional.of(accountRegisterDTO.getPreferredCurrency())
                 .orElse(Currency.USD));
 
         return Single.fromCallable(() -> {
                 // 1. First create the User without avatars
                 User newUser = User.builder()
-                    .name(accountRegisterDTO.name())
-                    .email(accountRegisterDTO.email())
-                    .password(passwordEncoder.encode(accountRegisterDTO.password()))
-                    .phoneNumber(accountRegisterDTO.phoneNumber())
+                    .name(accountRegisterDTO.getName())
+                    .email(accountRegisterDTO.getEmail())
+                    .password(passwordEncoder.encode(accountRegisterDTO.getPassword()))
+                    .phoneNumber(accountRegisterDTO.getPhoneNumber())
                     .isActive(true)
-                    .gender(accountRegisterDTO.gender())
+                    .gender(accountRegisterDTO.getGender())
                     .status(UserStatus.UNVERIFIED)
-                    .dateOfBirth(accountRegisterDTO.dateOfBirth())
+                    .dateOfBirth(accountRegisterDTO.getDateOfBirth())
                     .preferredLanguage(preferredLanguage)
                     .preferredCurrency(preferredCurrency)
                     .role(UserRole.MEMBER)
@@ -140,13 +140,13 @@ public class AuthService implements IAuthService, Identifiable {
 
                 // 4. Add avatar to user's avatar list
                 newUser.setAvatars(List.of(avatar));
-                
+
                 // 5. Create and save the wallet
                 Wallet newWallet = Wallet.builder()
                     .balance(0F)
                     .user(newUser)
                     .build();
-                
+
                 newWallet = walletRepository.save(newWallet);
                 newUser.setWallet(newWallet);
 
@@ -165,31 +165,31 @@ public class AuthService implements IAuthService, Identifiable {
             throw new DataNotFoundException(
                 localizationUtils.getLocalizedMessage(MessageKey.WRONG_PHONE_PASSWORD));
         }
-        
+
         User existingUser = optionalUser.get();
 
         existingUser.setLastLoginTimestamp(LocalDateTime.now());
         userRepository.save(existingUser);
-        
+
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(
                 email,
                 password,
                 existingUser.getAuthorities());
-        
+
         authenticationManager.authenticate(authenticationToken);
-        
+
         String token = jwtTokenUtils.generateToken(existingUser);
-        
+
         UserResponse userDetail = getUserDetailsFromToken(token);
-        
+
         Token jwtToken = tokenService.addToken(
-            userDetail.id(),
+            userDetail.getId(),
             token,
             isMobileDevice(request.getHeader("User-Agent")));
 
         log.info("New user logged in successfully");
-        
+
         return new LoginResponse(
             tokenMapper.toTokenResponse(jwtToken),
             userDetail
@@ -273,7 +273,7 @@ public class AuthService implements IAuthService, Identifiable {
     public void verifyOtpIsCorrect(UUID userId, String otp) throws Exception {
         UserPort.UserResponse user = userService.findUserById(userId);
 
-        Otp otpEntity = getOtpByEmailOtp(user.email(), otp);
+        Otp otpEntity = getOtpByEmailOtp(user.getEmail(), otp);
 
         //check the otp is expired or not
         if (otpEntity.getExpiredAt().isBefore(LocalDateTime.now())) {

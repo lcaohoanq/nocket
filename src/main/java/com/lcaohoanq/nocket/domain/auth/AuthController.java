@@ -65,8 +65,8 @@ public class AuthController implements Identifiable {
                 .isSuccess(true)
                 .data(
                     authService.login(
-                        userLoginDTO.email(),
-                        userLoginDTO.password())
+                        userLoginDTO.getEmail(),
+                        userLoginDTO.getPassword())
                 )
                 .build());
     }
@@ -169,8 +169,8 @@ public class AuthController implements Identifiable {
             throw new MethodArgumentNotValidException(result);
         }
 
-        User user = userService.findUserByEmail(verifyUserDTO.email());
-        authService.verifyOtpToVerifyUser(user.getId(), verifyUserDTO.otp());
+        User user = userService.findUserByEmail(verifyUserDTO.getEmail());
+        authService.verifyOtpToVerifyUser(user.getId(), verifyUserDTO.getOtp());
         return ResponseEntity.ok().body(
             ApiResponse.<OtpResponse>builder()
                 .message(MessageKey.VERIFY_USER_SUCCESSFULLY)

@@ -51,8 +51,8 @@ public class OtpController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(result);
         }
-        User user = userService.findUserByEmail(verifyUserDTO.email());
-        authService.verifyOtpIsCorrect(user.getId(), verifyUserDTO.otp());
+        User user = userService.findUserByEmail(verifyUserDTO.getEmail());
+        authService.verifyOtpIsCorrect(user.getId(), verifyUserDTO.getOtp());
         return ResponseEntity.ok().body(
             ApiResponse.<OtpResponse>builder()
                 .message(localizationUtils.getLocalizedMessage(MessageKey.OTP_IS_CORRECT))

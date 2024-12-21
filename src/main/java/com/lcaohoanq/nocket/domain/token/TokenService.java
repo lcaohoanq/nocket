@@ -78,7 +78,7 @@ public class TokenService implements ITokenService{
     @Override
     public Token addToken(UUID userId, String token, boolean isMobileDevice) {
         UserPort.UserResponse existingUser = userService.findUserById(userId);
-        List<Token> userTokens = tokenRepository.findByUserId(existingUser.id());
+        List<Token> userTokens = tokenRepository.findByUserId(existingUser.getId());
         int tokenCount = userTokens.size();
         // Số lượng token vượt quá giới hạn, xóa một token cũ
         if (tokenCount >= MAX_TOKENS) {
