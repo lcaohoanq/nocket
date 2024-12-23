@@ -10,7 +10,9 @@ import com.lcaohoanq.nocket.enums.PostType
 import com.lcaohoanq.nocket.metadata.MediaMeta
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
+import org.hibernate.envers.Audited
 
+@Audited
 @Entity
 @Table(name = "posts")
 @AttributeOverrides(

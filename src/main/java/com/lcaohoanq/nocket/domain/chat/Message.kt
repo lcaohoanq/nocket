@@ -3,7 +3,9 @@ package com.lcaohoanq.nocket.domain.chat
 import com.lcaohoanq.nocket.base.entity.BaseEntity
 import com.lcaohoanq.nocket.domain.user.User
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
 
+@Audited
 @Entity
 @Table(name = "messages")
 class Message : BaseEntity() {

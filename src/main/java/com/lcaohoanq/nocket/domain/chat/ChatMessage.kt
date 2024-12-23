@@ -5,8 +5,10 @@ import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.envers.Audited
 import java.time.LocalDateTime
 
+@Audited
 @Entity
 @Table(name = "chat_messages")
 class ChatMessage : BaseEntity() {

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference
 import com.lcaohoanq.nocket.base.entity.BaseEntity
 import com.lcaohoanq.nocket.enums.EReaction
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
 
+@Audited
 @Entity
 @Table(name = "reactions")
 class Reaction : BaseEntity() {

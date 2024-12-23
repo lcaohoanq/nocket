@@ -3,8 +3,10 @@ package com.lcaohoanq.nocket.domain.token
 import com.lcaohoanq.nocket.base.entity.BaseEntity
 import com.lcaohoanq.nocket.domain.user.User
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
 import java.time.LocalDateTime
 
+@Audited
 @Entity
 @Table(name = "tokens")
 class Token : BaseEntity() {

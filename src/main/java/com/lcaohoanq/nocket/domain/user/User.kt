@@ -18,11 +18,13 @@ import lombok.NoArgsConstructor
 import lombok.Setter
 import lombok.experimental.SuperBuilder
 import org.checkerframework.common.aliasing.qual.Unique
+import org.hibernate.envers.Audited
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
 
+@Audited
 @Entity
 @Table(name = "users")
 class User : BaseEntity(), UserDetails {

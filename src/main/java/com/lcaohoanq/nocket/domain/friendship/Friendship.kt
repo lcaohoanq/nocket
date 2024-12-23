@@ -4,7 +4,9 @@ import com.lcaohoanq.nocket.base.entity.BaseEntity
 import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.enums.FriendShipStatus
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
 
+@Audited
 @Entity
 @Table(
     name = "friendships",

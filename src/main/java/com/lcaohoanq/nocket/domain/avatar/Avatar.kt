@@ -5,7 +5,9 @@ import com.lcaohoanq.nocket.base.entity.BaseEntity
 import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.metadata.MediaMeta
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
 
+@Audited
 @Entity
 @Table(name = "avatars")
 @AttributeOverrides(

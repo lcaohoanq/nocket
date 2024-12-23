@@ -5,8 +5,10 @@ import com.lcaohoanq.nocket.base.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.hibernate.envers.Audited
 import java.time.LocalDateTime
 
+@Audited
 @Entity
 @Table(name = "otps")
 class Otp : BaseEntity() {
