@@ -29,7 +29,7 @@ import java.util.*
 @Slf4j
 @RequestMapping("${ApiConstant.API_PREFIX}/auth")
 @RestController
-open class AuthController(
+class AuthController(
     private val userService: IUserService,
     private val localizationUtils: LocalizationUtils,
     private val request: HttpServletRequest,

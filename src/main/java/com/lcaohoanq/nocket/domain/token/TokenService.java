@@ -1,6 +1,7 @@
 package com.lcaohoanq.nocket.domain.token;
 
 import com.lcaohoanq.nocket.component.JwtTokenUtils;
+import com.lcaohoanq.nocket.domain.jwt.JWTConfig;
 import com.lcaohoanq.nocket.domain.user.UserPort;
 import com.lcaohoanq.nocket.exception.ExpiredTokenException;
 import com.lcaohoanq.nocket.exception.TokenNotFoundException;
@@ -25,12 +26,7 @@ public class TokenService implements ITokenService {
 
     private static final int MAX_TOKENS = 3;
     private final UserService userService;
-    @Value("${jwt.expiration}")
-    private int expiration; //save to an environment variable
-
-    @Value("${jwt.expiration-refresh-token}")
-    private int expirationRefreshToken;
-
+    private final JWTConfig jwtConfig;
     private final TokenRepository tokenRepository;
     private final JwtTokenUtils jwtTokenUtil;
     private final UserMapper userMapper;
@@ -47,12 +43,12 @@ public class TokenService implements ITokenService {
             throw new ExpiredTokenException("Refresh token is expired");
         }
         String token = jwtTokenUtil.generateToken(user);
-        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
+        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(jwtConfig.getExpiration());
         existingToken.setExpirationDate(expirationDateTime);
         existingToken.setToken(token);
         existingToken.setRefreshToken(UUID.randomUUID().toString());
         existingToken.setRefreshExpirationDate(
-            LocalDateTime.now().plusSeconds(expirationRefreshToken));
+            LocalDateTime.now().plusSeconds(jwtConfig.getExpirationRefreshToken()));
         return existingToken;
     }
 
@@ -100,7 +96,7 @@ public class TokenService implements ITokenService {
             }
             tokenRepository.delete(tokenToDelete);
         }
-        long expirationInSeconds = expiration;
+        long expirationInSeconds = jwtConfig.getExpiration();
         LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expirationInSeconds);
         // Tạo mới một token cho người dùng
 
@@ -114,7 +110,8 @@ public class TokenService implements ITokenService {
         newToken.setMobile(isMobileDevice);
 
         newToken.setRefreshToken(UUID.randomUUID().toString());
-        newToken.setRefreshExpirationDate(LocalDateTime.now().plusSeconds(expirationRefreshToken));
+        newToken.setRefreshExpirationDate(LocalDateTime.now().plusSeconds(
+            jwtConfig.getExpirationRefreshToken()));
         tokenRepository.save(newToken);
         return newToken;
     }

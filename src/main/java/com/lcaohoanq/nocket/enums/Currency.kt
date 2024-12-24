@@ -1,15 +1,9 @@
-package com.lcaohoanq.nocket.enums;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package com.lcaohoanq.nocket.enums
 
 /*
 Data crawled from https://www.xe.com/symbols/
 */
-
-@Getter
-@AllArgsConstructor
-public enum Currency {
+enum class Currency(val code: String, val symbol: String) {
     ALL("ALL", "Lek"),
     AFN("AFN", "؋"),
     ARS("ARS", "$"),
@@ -21,7 +15,7 @@ public enum Currency {
     BYN("BYN", "Br"),
     BZD("BZD", "BZ$"),
     BMD("BMD", "$"),
-    BOB("BOB", "$b"),
+    BOB("BOB", "\$b"),
     BAM("BAM", "KM"),
     BWP("BWP", "P"),
     BGN("BGN", "лв"),
@@ -111,23 +105,16 @@ public enum Currency {
     UAH("UAH", "₴"),
     GBP("GBP", "£"),
     USD("USD", "$"),
-    UYU("UYU", "$U"),
+    UYU("UYU", "\$U"),
     UZS("UZS", "лв"),
     VEF("VEF", "Bs"),
     VND("VND", "₫"),
     YER("YER", "﷼"),
     ZWD("ZWD", "Z$");
 
-    private final String code;
-    private final String symbol;
-
-    // Optional method to get currency by code
-    public static Currency fromCode(String code) {
-        for (Currency currency : values()) {
-            if (currency.code.equalsIgnoreCase(code)) {
-                return currency;
-            }
+    companion object {
+        fun fromCode(code: String): Currency? {
+            return values().find { it.code == code }
         }
-        throw new IllegalArgumentException("No currency found with code: " + code);
     }
 }

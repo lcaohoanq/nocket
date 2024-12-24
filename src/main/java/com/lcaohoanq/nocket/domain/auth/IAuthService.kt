@@ -7,21 +7,21 @@ import java.util.*
 interface IAuthService {
 
     @Throws(Exception::class)
-    open fun register(accountRegisterDTO: AuthPort.AccountRegisterDTO): User
+    fun register(accountRegisterDTO: AuthPort.AccountRegisterDTO): User
 
     @Throws(Exception::class)
-    open fun login(email: String, password: String): AuthPort.LoginResponse
+    fun login(email: String, password: String): AuthPort.LoginResponse
 
     @Throws(Exception::class)
-    open fun getUserDetailsFromToken(token: String): UserPort.UserResponse
+    fun getUserDetailsFromToken(token: String): UserPort.UserResponse
 
     @Throws(Exception::class)
-    open fun logout(token: String, user: User)
+    fun logout(token: String, user: User)
 
     @Throws(Exception::class)
-    open fun verifyOtpToVerifyUser(userId: UUID, otp: String)
+    fun verifyOtpToVerifyUser(userId: UUID, otp: String)
 
     @Throws(Exception::class)
-    open fun verifyOtpIsCorrect(userId: UUID, otp: String)
+    fun verifyOtpIsCorrect(userId: UUID, otp: String)
 
 }

@@ -1,7 +1,6 @@
-package com.lcaohoanq.nocket.enums;
+package com.lcaohoanq.nocket.enums
 
-public enum CartItemStatus {
-
+enum class CartItemStatus {
     IN_CART,
     ALL,
     WAIT_FOR_CONFIRMATION,
@@ -9,5 +8,4 @@ public enum CartItemStatus {
     IN_PROGRESS,
     DELIVERED,
     CANCELLED,
-    
 }

@@ -1,11 +1,12 @@
-package com.lcaohoanq.nocket.enums;
+package com.lcaohoanq.nocket.enums
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public enum Country {
+enum class Country(
+    val countryName: String,
+    val alpha2Code: String,
+    val alpha3Code: String,
+    val numericCode: String,
+    val phoneCode: String
+) {
     // Format: ENUM_NAME("Country Name", "ISO 3166-1 Alpha-2 Code", "ISO 3166-1 Alpha-3 Code", "Numeric Code", "Phone Code")
     AFGHANISTAN("Afghanistan", "AF", "AFG", "004", "+93"),
     ALBANIA("Albania", "AL", "ALB", "008", "+355"),
@@ -182,8 +183,10 @@ public enum Country {
     RWANDA("Rwanda", "RW", "RWA", "646", "+250"),
     SAINT_KITTS_AND_NEVIS("Saint Kitts and Nevis", "KN", "KNA", "659", "+1-869"),
     SAINT_LUCIA("Saint Lucia", "LC", "LCA", "662", "+1-758"),
-    SAINT_VINCENT_AND_THE_GRENADINES("Saint Vincent and the Grenadines", "VC", "VCT", "670",
-                                     "+1-784"),
+    SAINT_VINCENT_AND_THE_GRENADINES(
+        "Saint Vincent and the Grenadines", "VC", "VCT", "670",
+        "+1-784"
+    ),
     SAMOA("Samoa", "WS", "WSM", "882", "+685"),
     SAN_MARINO("San Marino", "SM", "SMR", "674", "+378"),
     SAO_TOME_AND_PRINCIPE("Sao Tome and Principe", "ST", "STP", "678", "+239"),
@@ -233,11 +236,4 @@ public enum Country {
     YEMEN("Yemen", "YE", "YEM", "887", "+967"),
     ZAMBIA("Zambia", "ZM", "ZMB", "894", "+260"),
     ZIMBABWE("Zimbabwe", "ZW", "ZWE", "716", "+263");
-
-    private final String countryName;
-    private final String alpha2Code;
-    private final String alpha3Code;
-    private final String numericCode;
-    private final String phoneCode;
-
 }
