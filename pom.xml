@@ -31,6 +31,7 @@
     <java.version>17</java.version>
     <springdoc.version>2.3.0</springdoc.version>
     <kotlin.version>2.1.0</kotlin.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
   </properties>
   <dependencies>
     <dependency>
@@ -357,12 +358,12 @@
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
+      <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>1.5.5.Final</version>
+      <version>${mapstruct.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -409,7 +410,28 @@
         <artifactId>kotlin-maven-plugin</artifactId>
         <groupId>org.jetbrains.kotlin</groupId>
         <version>${kotlin.version}</version>
-
+        <executions>
+        <execution>
+          <id>kapt</id>
+          <goals>
+            <goal>kapt</goal>
+          </goals>
+          <configuration>
+            <sourceDirs>
+              <sourceDir>src/main/kotlin</sourceDir>
+              <sourceDir>src/main/java</sourceDir>
+            </sourceDirs>
+            <annotationProcessorPaths>
+              <annotationProcessorPath>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+              </annotationProcessorPath>
+            </annotationProcessorPaths>
+          </configuration>
+        </execution>
+          
+        </executions>
         <configuration>
           <compilerPlugins>
             <plugin>spring</plugin>

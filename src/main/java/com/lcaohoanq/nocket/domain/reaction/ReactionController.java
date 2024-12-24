@@ -62,7 +62,7 @@ public class ReactionController {
     ) {
 
         Reaction newReaction = new Reaction();
-        newReaction.setReaction(reaction.reaction());
+        newReaction.setReaction(reaction.getReaction());
 
         return ResponseEntity.ok(
             ApiResponse.<ReactionPort.ReactionResponse>builder()

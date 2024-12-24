@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
 public interface WalletMapper {
 
     WalletResponse toWalletResponse(Wallet wallet);
-    
+
 }

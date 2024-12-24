@@ -76,14 +76,14 @@ public class PostReactionController {
     ) {
 
         Post existingPost = postRepository
-            .findById(postReactionDTO.postId())
+            .findById(postReactionDTO.getPostId())
             .orElseThrow(() -> new DataNotFoundException("Post not found"));
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername());
 
-        Reaction reaction = reactionRepository.findByReaction(postReactionDTO.reaction())
+        Reaction reaction = reactionRepository.findByReaction(postReactionDTO.getReaction())
             .orElseThrow(() -> new DataNotFoundException("Reaction not found"));
 
         PostReaction postReaction = new PostReaction();

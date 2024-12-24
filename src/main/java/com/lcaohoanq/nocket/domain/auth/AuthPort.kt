@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.lcaohoanq.nocket.constant.Regex
-import com.lcaohoanq.nocket.domain.token.TokenResponse
+import com.lcaohoanq.nocket.domain.token.TokenPort.TokenResponse
 import com.lcaohoanq.nocket.domain.user.UserPort
 import com.lcaohoanq.nocket.enums.Country
 import com.lcaohoanq.nocket.enums.Currency

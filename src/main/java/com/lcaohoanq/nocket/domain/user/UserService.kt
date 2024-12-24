@@ -45,7 +45,7 @@ class UserService(
         return mapPageResponse(
             usersPage,
             pageable,
-            { user: User? -> userMapper.toUserResponse(user) },
+            { user: User -> userMapper.toUserResponse(user) },
             "Get all users successfully"
         )
     }
@@ -85,7 +85,7 @@ class UserService(
     @Throws(DataNotFoundException::class)
     override fun findUserById(id: UUID): UserResponse {
         return userRepository.findById(id)
-            .map { user: User? ->
+            .map { user: User ->
                 userMapper!!.toUserResponse(
                     user
                 )
@@ -135,7 +135,7 @@ class UserService(
         // Check if the email is being changed and if it already exists for another user
         val newEmail = updatedUserDTO.email
 
-        if (newEmail != null && !newEmail.isEmpty()) {
+        if (newEmail != null && newEmail.isNotEmpty()) {
             // Check if the new email is different from the current user's email
             if (newEmail != existingUser.email) {
                 // Check if the new email is already in use by another user
@@ -156,7 +156,7 @@ class UserService(
         // Check if the phoneNumber number is being changed and if it already exists for another user
         val newPhoneNumber = updatedUserDTO.phoneNumber
 
-        if (newPhoneNumber != null && !newPhoneNumber.isEmpty()) {
+        if (newPhoneNumber != null && newPhoneNumber.isNotEmpty()) {
             // Check if the new phoneNumber number is different from the current user's phoneNumber number
             if (newPhoneNumber != existingUser.phoneNumber) {
                 // Check if the new phoneNumber number is already in use by another user
@@ -179,24 +179,16 @@ class UserService(
         }
 
         // Update user information based on the DTO
-        if (updatedUserDTO.name != null) {
-            existingUser.name = updatedUserDTO.name
-        }
-        if (updatedUserDTO.status != null) {
-            existingUser.status = UserStatus.valueOf(updatedUserDTO.status)
-        }
-        if (updatedUserDTO.dob != null) {
-            existingUser.dateOfBirth = updatedUserDTO.dob
-        }
+        existingUser.name = updatedUserDTO.name
+        existingUser.status = UserStatus.valueOf(updatedUserDTO.status)
+        existingUser.dateOfBirth = updatedUserDTO.dob
 
         //        if (updatedUserDTO.avatar() != null) {
 //            existingUser.setAvatars(updatedUserDTO.avatar());
 //        }
 
         // Update the password if it is provided in the DTO
-        if (updatedUserDTO.password != null
-            && !updatedUserDTO.password.isEmpty()
-        ) {
+        if (updatedUserDTO.password.isNotEmpty()) {
             if (updatedUserDTO.password != updatedUserDTO.confirmPassword) {
                 throw DataNotFoundException("Password and confirm password must be the same")
             }
@@ -207,24 +199,6 @@ class UserService(
         //existingUser.setRole(updatedRole);
         // Save the updated user
         return userRepository.save(existingUser)
-    }
-
-    @Transactional
-    @Throws(Exception::class)
-    override fun updateUserBalance(userId: UUID, payment: Long): User? {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new DataNotFoundException(
-//                        localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
-//                ));
-//
-//        if (user.getAccountBalance() < payment) {
-//            throw new BiddingRuleException("Not enough money to make payment");
-//        }
-//
-//        user.setAccountBalance(user.getAccountBalance() - payment);
-//
-//        return userRepository.save(user);
-        return null
     }
 
     @Throws(DataNotFoundException::class)
@@ -264,7 +238,7 @@ class UserService(
 
         existingUser.hashedPassword = passwordEncoder!!.encode(updatePasswordDTO.newPassword)
 
-        mailService!!.sendMail(
+        mailService.sendMail(
             existingUser.email,
             "Password updated successfully",
             EmailCategoriesEnum.RESET_PASSWORD.type,

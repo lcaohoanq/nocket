@@ -26,7 +26,7 @@ open class ForgotPasswordService(
     @Throws(MessagingException::class)
     override fun sendEmailOtp(existingUser: User) {
         val context = Context()
-        val otp = OtpUtil.generateOtp()
+        val otp = otpService.generateOtp()
         context.setVariable("name", existingUser.name)
         context.setVariable("otp", otp)
 

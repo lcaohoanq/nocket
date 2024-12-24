@@ -30,7 +30,7 @@ import java.time.LocalDateTime
 class User : BaseEntity(), UserDetails {
     @Column(name = "email", nullable = false, length = 100)
     @Email
-    var email: String? = null
+    var email: String = "default@example.com"
 
     @Column(name = "password", length = 200)
     @JsonProperty("password")

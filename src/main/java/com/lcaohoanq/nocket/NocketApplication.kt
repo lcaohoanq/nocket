@@ -14,7 +14,7 @@ import java.util.*
 @EnableRetry
 @EnableConfigurationProperties(JWTConfig::class)
 @EnableJpaRepositories(basePackages = ["com.lcaohoanq.nocket.domain"])
-open class NocketApplication
+class NocketApplication
 
 
 fun main(args: Array<String>) {

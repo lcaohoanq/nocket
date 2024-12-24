@@ -21,7 +21,7 @@ public interface UserMapper {
             })
             .orElse(null);
     }
-    
+
     User toUser(UserPort.UserResponse userResponse);
-    
+
 }
