@@ -1,9 +1,9 @@
 package com.lcaohoanq.nocket.domain.auth
 
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
-import com.lcaohoanq.nocket.component.JwtTokenUtils
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.jwt.JwtTokenUtils
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.constant.Regex
 import com.lcaohoanq.nocket.domain.avatar.Avatar
 import com.lcaohoanq.nocket.domain.mail.IMailService
@@ -202,20 +202,11 @@ open class AuthService(
 
     @Transactional
     override fun verifyOtpToVerifyUser(userId: UUID, otp: String) {
-        val user = userRepository.findById(userId).orElseThrow {
-            DataNotFoundException(
-                localizationUtils.getLocalizedMessage(
-                    MessageKey.USER_NOT_FOUND
-                )
-            )
-        }
+        val user = userRepository.findById(userId)
+            .orElseThrow { DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKey.USER_NOT_FOUND)) }
 
         if (user.status === UserStatus.VERIFIED) {
-            throw MalformBehaviourException(
-                localizationUtils.getLocalizedMessage(
-                    MessageKey.USER_ALREADY_VERIFIED
-                )
-            )
+            throw MalformBehaviourException(localizationUtils.getLocalizedMessage(MessageKey.USER_ALREADY_VERIFIED))
         }
 
         if (user.status === UserStatus.BANNED) {
@@ -232,9 +223,7 @@ open class AuthService(
             throw DataIntegrityViolationException("OTP is expired, please try again later")
         }
 
-        if (!otpEntity.otp.equals(otp)) {
-            throw DataIntegrityViolationException("OTP is not correct, please try again later")
-        }
+        if (!otpEntity.otp.equals(otp)) throw DataIntegrityViolationException("OTP is not correct, please try again later")
 
         otpEntity.isUsed = true
         otpService.disableOtp(otpEntity.id)
@@ -242,10 +231,9 @@ open class AuthService(
         userRepository.save(user)
     }
 
-    private fun getOtpByEmailOtp(email: String, otp: String): Otp {
-        return otpService.getOtpByEmailOtp(email, otp)
+    private fun getOtpByEmailOtp(email: String, otp: String): Otp =
+        otpService.getOtpByEmailOtp(email, otp)
             .orElseThrow { DataIntegrityViolationException("OTP is not correct, please try again later") }
-    }
 
     @Transactional
     override fun verifyOtpIsCorrect(userId: UUID, otp: String) {

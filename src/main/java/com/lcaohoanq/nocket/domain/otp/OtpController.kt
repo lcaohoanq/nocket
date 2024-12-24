@@ -1,9 +1,9 @@
 package com.lcaohoanq.nocket.domain.otp
 
 import com.lcaohoanq.nocket.api.ApiResponse
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.ApiConstant
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.api.ApiConstant
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.auth.AuthPort.VerifyUserDTO
 import com.lcaohoanq.nocket.domain.auth.AuthService
 import com.lcaohoanq.nocket.domain.auth.OtpResponse

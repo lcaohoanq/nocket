@@ -1,4 +1,4 @@
-package com.lcaohoanq.nocket.component
+package com.lcaohoanq.nocket.domain.localization
 
 import com.lcaohoanq.nocket.util.WebUtil
 import org.springframework.context.MessageSource

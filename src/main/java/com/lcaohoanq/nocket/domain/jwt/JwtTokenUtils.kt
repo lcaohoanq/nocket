@@ -1,6 +1,5 @@
-package com.lcaohoanq.nocket.component
+package com.lcaohoanq.nocket.domain.jwt
 
-import com.lcaohoanq.nocket.domain.jwt.JWTConfig
 import com.lcaohoanq.nocket.domain.token.TokenRepository
 import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.exception.InvalidParamException

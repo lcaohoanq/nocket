@@ -2,9 +2,9 @@ package com.lcaohoanq.nocket.domain.user
 
 import com.lcaohoanq.nocket.api.PageResponse
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
-import com.lcaohoanq.nocket.component.JwtTokenUtils
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.jwt.JwtTokenUtils
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.auth.AuthPort.UpdatePasswordDTO
 import com.lcaohoanq.nocket.domain.mail.IMailService
 import com.lcaohoanq.nocket.domain.otp.OtpService

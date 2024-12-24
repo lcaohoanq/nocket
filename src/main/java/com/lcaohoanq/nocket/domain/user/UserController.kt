@@ -2,8 +2,8 @@ package com.lcaohoanq.nocket.domain.user
 
 import com.lcaohoanq.nocket.api.ApiResponse
 import com.lcaohoanq.nocket.api.PageResponse
-import com.lcaohoanq.nocket.constant.ApiConstant
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.api.ApiConstant
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.user.UserPort.UpdateUserDTO
 import com.lcaohoanq.nocket.domain.user.UserPort.UserResponse
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException
@@ -33,42 +33,34 @@ class UserController(
     fun fetchUser(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") limit: Int
-    ): ResponseEntity<PageResponse<UserResponse>> {
-        return ResponseEntity.ok(userService.fetchUser(PageRequest.of(page, limit)))
-    }
+    ): ResponseEntity<PageResponse<UserResponse>> =
+        ResponseEntity.ok(userService.fetchUser(PageRequest.of(page, limit)))
 
     @GetMapping("/{id}")
     fun getUserById(
         @PathVariable id: UUID
-    ): ResponseEntity<ApiResponse<UserResponse>> {
-        return ResponseEntity.ok(
-            ApiResponse.builder<UserResponse>()
-                .message("Successfully get user by id")
-                .isSuccess(true)
-                .statusCode(HttpStatus.OK.value())
-                .data(userService.findUserById(id))
-                .build()
-        )
-    }
+    ): ResponseEntity<ApiResponse<UserResponse>> = ResponseEntity.ok(
+        ApiResponse.builder<UserResponse>()
+            .message("Successfully get user by id")
+            .isSuccess(true)
+            .statusCode(HttpStatus.OK.value())
+            .data(userService.findUserById(id))
+            .build()
+    )
 
     @PostMapping("/details")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    @Throws(
-        Exception::class
-    )
-    fun takeUserDetailsFromToken(): ResponseEntity<UserResponse> {
-        val userDetails = SecurityContextHolder.getContext()
-            .authentication.principal as UserDetails
-        return ResponseEntity.ok(
-            userMapper.toUserResponse(userService.findByUsername(userDetails.username))
+    fun takeUserDetailsFromToken(): ResponseEntity<UserResponse> =
+        ResponseEntity.ok(
+            userMapper.toUserResponse(
+                userService.findByUsername(
+                    (SecurityContextHolder.getContext().authentication.principal as UserDetails).username
+                )
+            )
         )
-    }
 
     @PutMapping("/details/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
-    @Throws(
-        Exception::class
-    )
     fun updateUserDetails(
         @PathVariable userId: UUID,
         @RequestBody updatedUserDTO: @Valid UpdateUserDTO,
@@ -98,13 +90,11 @@ class UserController(
     @PutMapping("/block/{userId}/{active}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MEMBER', 'ROLE_STAFF')")
     fun blockOrEnable(
-        @PathVariable userId: @Valid UUID,
-        @PathVariable active: @Valid Int
+        @PathVariable @Valid userId: UUID,
+        @PathVariable @Valid active: Int
     ): ResponseEntity<String> {
         userService.blockOrEnable(userId, active > 0)
-        val message =
-            if (active > 0) "Successfully enabled the user." else "Successfully blocked the user."
-        return ResponseEntity.ok().body(message)
+        return ResponseEntity.ok(if (active > 0) "Successfully enabled the user." else "Successfully blocked the user.")
     }
 
     @DeleteMapping("/{id}")

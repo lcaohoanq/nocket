@@ -1,8 +1,8 @@
 package com.lcaohoanq.nocket.domain.wallet
 
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.mail.IMailService
 import com.lcaohoanq.nocket.domain.user.IUserService
 import com.lcaohoanq.nocket.domain.user.UserRepository

@@ -1,6 +1,6 @@
 package com.lcaohoanq.nocket.domain.mail
 
-import com.lcaohoanq.nocket.constant.ApiConstant
+import com.lcaohoanq.nocket.api.ApiConstant
 import com.lcaohoanq.nocket.constant.EmailSubject
 import com.lcaohoanq.nocket.domain.otp.IOtpService
 import com.lcaohoanq.nocket.domain.otp.Otp

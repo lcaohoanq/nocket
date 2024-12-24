@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lcaohoanq.nocket.component.JwtTokenUtils;
+import com.lcaohoanq.nocket.domain.jwt.JwtTokenUtils;
 import com.lcaohoanq.nocket.api.ApiError;
 import com.lcaohoanq.nocket.exception.JwtAuthenticationException;
 import com.lcaohoanq.nocket.domain.user.User;

@@ -1,4 +1,4 @@
-package com.lcaohoanq.nocket.config;
+package com.lcaohoanq.nocket.security;
 
 import com.lcaohoanq.nocket.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;

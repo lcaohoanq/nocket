@@ -1,4 +1,4 @@
-package com.lcaohoanq.nocket.constant
+package com.lcaohoanq.nocket.domain.localization
 
 object MessageKey {
     const val LOGIN_SUCCESSFULLY: String = "user.login.login_successfully"

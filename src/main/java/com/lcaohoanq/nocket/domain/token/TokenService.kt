@@ -1,7 +1,7 @@
 package com.lcaohoanq.nocket.domain.token
 
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
-import com.lcaohoanq.nocket.component.JwtTokenUtils
+import com.lcaohoanq.nocket.domain.jwt.JwtTokenUtils
 import com.lcaohoanq.nocket.domain.jwt.JWTConfig
 import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.domain.user.UserService

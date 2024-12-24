@@ -2,9 +2,9 @@ package com.lcaohoanq.nocket.domain.auth
 
 import com.lcaohoanq.nocket.annotation.RetryAndBlock
 import com.lcaohoanq.nocket.api.ApiResponse
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.ApiConstant
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.api.ApiConstant
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.auth.AuthPort.AccountRegisterDTO
 import com.lcaohoanq.nocket.domain.auth.AuthPort.VerifyUserDTO
 import com.lcaohoanq.nocket.domain.user.IUserService
@@ -14,7 +14,6 @@ import com.lcaohoanq.nocket.mapper.UserMapper
 import io.micrometer.core.annotation.Timed
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
-import lombok.RequiredArgsConstructor
 import lombok.extern.slf4j.Slf4j
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus

@@ -5,8 +5,8 @@ import com.lcaohoanq.nocket.base.exception.DataAlreadyExistException
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
 import com.lcaohoanq.nocket.base.exception.DataWrongFormatException
 import com.lcaohoanq.nocket.base.exception.OutOfStockException
-import com.lcaohoanq.nocket.component.LocalizationUtils
-import com.lcaohoanq.nocket.constant.MessageKey
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
+import com.lcaohoanq.nocket.domain.localization.MessageKey
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.mail.MessagingException
 import lombok.extern.slf4j.Slf4j

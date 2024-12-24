@@ -1,6 +1,6 @@
 package com.lcaohoanq.nocket.domain.asset
 
-import com.lcaohoanq.nocket.component.LocalizationUtils
+import com.lcaohoanq.nocket.domain.localization.LocalizationUtils
 import com.lcaohoanq.nocket.exception.FileTooLargeException
 import com.lcaohoanq.nocket.exception.UnsupportedMediaTypeException
 import org.springframework.stereotype.Service

@@ -1,4 +1,4 @@
-package com.lcaohoanq.nocket.constant
+package com.lcaohoanq.nocket.api
 
 import org.springframework.beans.factory.annotation.Value
 

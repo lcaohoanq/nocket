@@ -10,13 +10,14 @@ class OtpService(
     private val otpRepository: OtpRepository
 ) : IOtpService {
     
-    override fun createOtp(otp: Otp): Otp {
-        val newOtp = Otp()
-        newOtp.otp = otp.otp
-        newOtp.email = otp.email
-        newOtp.expiredAt = otp.expiredAt
-        newOtp.isUsed = otp.isUsed
-        newOtp.isExpired = otp.isExpired
+    override fun createOtp(newOtp: Otp): Otp {
+        with(newOtp) {
+            otp = newOtp.otp
+            email = newOtp.email
+            expiredAt = newOtp.expiredAt
+            isUsed = newOtp.isUsed
+            isExpired = newOtp.isExpired
+        }
         return otpRepository.save(newOtp)
     }
 
@@ -38,6 +39,7 @@ class OtpService(
     }
 
     override fun generateOtp(): String {
-        return ((Math.random() * 9000).toInt() + 1000).toString()
+        val range = 100000..999999
+        return range.random().toString()
     }
 }

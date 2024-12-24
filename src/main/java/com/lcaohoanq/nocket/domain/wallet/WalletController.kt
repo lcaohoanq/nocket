@@ -1,7 +1,7 @@
 package com.lcaohoanq.nocket.domain.wallet
 
 import com.lcaohoanq.nocket.api.ApiResponse
-import com.lcaohoanq.nocket.constant.ApiConstant
+import com.lcaohoanq.nocket.api.ApiConstant
 import com.lcaohoanq.nocket.domain.user.IUserService
 import com.lcaohoanq.nocket.domain.wallet.WalletPort.WalletResponse
 import com.lcaohoanq.nocket.exception.MalformDataException

@@ -1,4 +1,4 @@
-package com.lcaohoanq.nocket.config
+package com.lcaohoanq.nocket.mapper
 
 import org.modelmapper.ModelMapper
 import org.springframework.context.annotation.Bean
