@@ -111,7 +111,7 @@ class User : BaseEntity(), UserDetails {
     }
 
     override fun getPassword(): String {
-        return password ?: ""
+        return this.hashedPassword ?: ""
     }
 
     override fun getUsername(): String {

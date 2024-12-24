@@ -90,7 +90,7 @@ public class PostController {
                 .statusCode(HttpStatus.OK.value())
                 .data(postRepository.findById(id)
                           .map(postMapper::toPostResponse)
-                          .orElseThrow(DataNotFoundException::new))
+                          .orElseThrow())
                 .build()
         );
     }

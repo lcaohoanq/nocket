@@ -1,7 +1,10 @@
 package com.lcaohoanq.nocket.constant
 
+import org.springframework.beans.factory.annotation.Value
+
 object ApiConstant {
     
-    const val API_PREFIX = "/api/v1"
-    
+    @Value("\${api.prefix}")
+    const val API_PREFIX: String = "/api/v1"
+
 }

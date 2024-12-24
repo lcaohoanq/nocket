@@ -8,15 +8,15 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.*
 
-interface TokenRepository : JpaRepository<Token, UUID?> {
-    fun findByUserId(userId: UUID?): List<Token>
+interface TokenRepository : JpaRepository<Token, UUID> {
+    fun findByUserId(userId: UUID): List<Token>
 
-    fun findByToken(token: String?): Token
+    fun findByToken(token: String): Token
 
-    fun findByRefreshToken(token: String?): Token?
+    fun findByRefreshToken(token: String): Token
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Token t WHERE t.expirationDate < :now OR t.expired = true")
-    fun deleteExpiredTokens(@Param("now") now: LocalDateTime?)
+    fun deleteExpiredTokens(@Param("now") now: LocalDateTime)
 }

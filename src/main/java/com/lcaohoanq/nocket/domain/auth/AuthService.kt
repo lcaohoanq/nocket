@@ -148,26 +148,24 @@ open class AuthService(
 
     override fun login(email: String, password: String): AuthPort.LoginResponse {
 
-        val optionalUser = userRepository.findByEmail(email)
-        if (optionalUser.isEmpty) {
-            throw DataIntegrityViolationException(
-                localizationUtils.getLocalizedMessage(MessageKey.WRONG_PHONE_PASSWORD)
-            );
+        val existingUser = userRepository.findByEmail(email)?.let {
+            it.get() // get the value from Optional
+        } ?: throw DataIntegrityViolationException(
+            localizationUtils.getLocalizedMessage(MessageKey.WRONG_PHONE_PASSWORD)
+        )
+
+        // Update last login timestamp and save user
+        existingUser.apply {
+            lastLoginTimestamp = LocalDateTime.now()
+            userRepository.save(this)
         }
-
-        val existingUser = optionalUser.get()
-
-        existingUser.lastLoginTimestamp = LocalDateTime.now()
-        userRepository.save(existingUser)
 
         val authenticationToken =
             UsernamePasswordAuthenticationToken(email, password, existingUser.authorities)
         authenticationManager.authenticate(authenticationToken)
 
         val token = jwtTokenUtils.generateToken(existingUser)
-
         val userResponse = userMapper.toUserResponse(existingUser)
-
         val jwtToken = tokenService.addToken(
             userResponse.id,
             token,
