@@ -49,7 +49,7 @@ class PostController(
         @RequestParam(required = true) page: Int,
         @RequestParam(required = true) limit: Int
     ): ResponseEntity<PageResponse<PostResponse>> {
-        require(!(page == null || page < 0 || limit == null || limit < 0)) { "Page and limit must be greater than 0." }
+        require(!(page < 0 || limit < 0)) { "Page and limit must be greater than 0." }
 
         val pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending())
 

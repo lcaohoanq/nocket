@@ -135,7 +135,7 @@ class UserService(
         // Check if the email is being changed and if it already exists for another user
         val newEmail = updatedUserDTO.email
 
-        if (newEmail != null && newEmail.isNotEmpty()) {
+        if (newEmail.isNotEmpty()) {
             // Check if the new email is different from the current user's email
             if (newEmail != existingUser.email) {
                 // Check if the new email is already in use by another user
@@ -156,7 +156,7 @@ class UserService(
         // Check if the phoneNumber number is being changed and if it already exists for another user
         val newPhoneNumber = updatedUserDTO.phoneNumber
 
-        if (newPhoneNumber != null && newPhoneNumber.isNotEmpty()) {
+        if (newPhoneNumber.isNotEmpty()) {
             // Check if the new phoneNumber number is different from the current user's phoneNumber number
             if (newPhoneNumber != existingUser.phoneNumber) {
                 // Check if the new phoneNumber number is already in use by another user

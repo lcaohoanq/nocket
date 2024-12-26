@@ -93,7 +93,7 @@ class JwtTokenUtils(
 
 
             // Check token existence and revocation
-            if (existingToken == null || java.lang.Boolean.TRUE == existingToken.revoked) {
+            if (java.lang.Boolean.TRUE == existingToken.revoked) {
                 throw JwtAuthenticationException("Token is invalid or has been revoked")
             }
 

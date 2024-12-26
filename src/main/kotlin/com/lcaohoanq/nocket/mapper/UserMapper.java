@@ -16,8 +16,8 @@ public interface UserMapper {
     default String getFirstAvatar(User user) {
         return user.getAvatars().stream().findFirst()
             .map(avatar -> {
-                assert avatar.mediaMeta != null;
-                return avatar.mediaMeta.getImageUrl();
+                assert avatar.getMediaMeta() != null;
+                return avatar.getMediaMeta().getImageUrl();
             })
             .orElse(null);
     }

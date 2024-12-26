@@ -129,13 +129,9 @@ open class AuthService(
             newUser.avatars = listOf(avatar)
 
             // 5. Create and save the wallet
-            val newWallet = Wallet().apply {
-                // 5.1 Set the wallet balance to 0
-                balance = 0f
-                user = newUser
-            }
-                .let { walletRepository.save(it) }
-
+            val newWallet = Wallet(balance = 0f, user = newUser).let { walletRepository.save(it) }
+            // 5.1 Set the wallet balance to 0
+             
             newUser.wallet = newWallet
 
             // 6. Save everything
@@ -197,7 +193,7 @@ open class AuthService(
         if (jwtTokenUtils.isTokenExpired(token)) {
             throw ExpiredTokenException("Token is expired")
         }
-        
+
         with(user) {
             activityStatus = User.ActivityStatus.OFFLINE
             userRepository.save(this)

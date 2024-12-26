@@ -25,8 +25,7 @@ class Avatar : BaseEntity() {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     var user: User? = null
-
-    @JvmField
+    
     @Embedded
     var mediaMeta: MediaMeta? = null
 }

@@ -9,13 +9,12 @@ import org.hibernate.envers.Audited
 @Audited
 @Entity
 @Table(name = "wallets")
-class Wallet : BaseEntity() {
-    @JvmField
+data class Wallet(
     @Column(name = "balance", nullable = false)
-    var balance: Float? = null
+    var balance: Float? = null,
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference // Prevent infinite loop when serializing
     var user: User? = null
-}
+) : BaseEntity()

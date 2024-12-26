@@ -53,7 +53,10 @@ open class WalletService(
                     localizationUtils!!.getLocalizedMessage(MessageKey.USER_NOT_FOUND)
                 )
             }
-        existingUser.wallet!!.balance = existingUser.wallet!!.balance!! + payment
+        
+        with(existingUser.wallet) {
+            this!!.balance = this.balance!! + payment
+        }
 
         val context = Context()
         context.setVariable("name", existingUser.name)
