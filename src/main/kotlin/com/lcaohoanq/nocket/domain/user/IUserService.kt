@@ -61,4 +61,8 @@ interface IUserService {
     fun existsByPhoneNumber(phoneNumber: String): Boolean
 
     fun existsById(id: UUID): Boolean
+
+    fun saveUser(user: User)
+    fun disconnect(user: User)
+    fun findConnectedUsers(): List<User>
 }

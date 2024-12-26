@@ -157,6 +157,7 @@ open class AuthService(
         // Update last login timestamp and save user
         existingUser.apply {
             lastLoginTimestamp = LocalDateTime.now()
+            activityStatus = User.ActivityStatus.ONLINE
             userRepository.save(this)
         }
 
@@ -195,6 +196,11 @@ open class AuthService(
     override fun logout(token: String, user: User) {
         if (jwtTokenUtils.isTokenExpired(token)) {
             throw ExpiredTokenException("Token is expired")
+        }
+        
+        with(user) {
+            activityStatus = User.ActivityStatus.OFFLINE
+            userRepository.save(this)
         }
 
         tokenService.deleteToken(token, user)

@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.Payload
+import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -109,5 +112,31 @@ class UserController(
     fun restoreUser(@PathVariable id: UUID): ResponseEntity<*> {
         userService.restoreUser(id)
         return ResponseEntity.ok("Restore user successfully")
+    }
+
+    @MessageMapping("/user.addUser")
+    @SendTo("/topic/public")
+    fun addUser(
+        @Payload user: User
+    ): User {
+        println("Received user: $user")
+        userService.saveUser(user)
+        return user
+    }
+
+    @MessageMapping("/user.disconnectUser")
+    @SendTo("/topic/public")
+    fun disconnectUser(
+        @Payload user: User
+    ): User {
+        userService.disconnect(user)
+        return user
+    }
+
+    @GetMapping("/users")
+    fun findConnectedUsers(): ResponseEntity<List<User>> {
+        return ResponseEntity.ok(
+            userService.findConnectedUsers()
+        )
     }
 }

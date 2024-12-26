@@ -20,6 +20,8 @@ interface UserRepository : JpaRepository<User, UUID> {
 
     fun findByRole(role: UserRole): Optional<User>
 
+    fun findAllByActivityStatus(status: User.ActivityStatus): List<User>
+
     @Query("SELECT u FROM User u WHERE u.role = :role")
     fun findAllUserWithRole(pageable: Pageable, role: UserRole): Page<User>
 

@@ -304,4 +304,24 @@ class UserService(
     override fun existsById(id: UUID): Boolean {
         return userRepository.existsById(id)
     }
+
+    override fun saveUser(user: User) {
+        with(user){
+            activityStatus = User.ActivityStatus.ONLINE
+        }
+
+        userRepository.save(user)
+    }
+
+    override fun disconnect(user: User) {
+        val storedUser = userRepository.findById(user.id).orElse(null)
+        if (storedUser != null) {
+            storedUser.activityStatus = User.ActivityStatus.OFFLINE
+            userRepository.save(storedUser)
+        }
+    }
+
+    override fun findConnectedUsers(): List<User> {
+        return userRepository.findAllByActivityStatus(User.ActivityStatus.ONLINE)
+    }
 }

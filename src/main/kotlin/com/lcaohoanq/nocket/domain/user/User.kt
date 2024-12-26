@@ -49,6 +49,10 @@ class User : BaseEntity(), UserDetails {
     @Column(name = "status")
     var status: UserStatus? = null
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "activity_status")
+    var activityStatus: ActivityStatus = ActivityStatus.OFFLINE
+
     @Column(name = "date_of_birth")
     var dateOfBirth: String? = null
 
@@ -79,14 +83,6 @@ class User : BaseEntity(), UserDetails {
     @Column(name = "last_login_timestamp")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     var lastLoginTimestamp: LocalDateTime? = null
-
-    @OneToMany(mappedBy = "user1")
-    @JsonIgnore
-    var initiatedChats: MutableList<ChatRoom> = mutableListOf()
-
-    @OneToMany(mappedBy = "user2")
-    @JsonIgnore
-    var receivedChats: MutableList<ChatRoom> = mutableListOf()
 
     @OneToMany(mappedBy = "user1")
     @JsonIgnore
@@ -125,5 +121,9 @@ class User : BaseEntity(), UserDetails {
 
     companion object {
         fun builder(): User = User()
+    }
+
+    enum class ActivityStatus {
+        ONLINE, OFFLINE
     }
 }
