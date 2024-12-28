@@ -8,7 +8,7 @@ import com.lcaohoanq.nocket.domain.user.UserRepository
 import com.lcaohoanq.nocket.enums.FriendShipStatus
 import com.lcaohoanq.nocket.exception.MalformBehaviourException
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException
-import com.lcaohoanq.nocket.mapper.UserMapper
+import com.lcaohoanq.nocket.domain.user.UserMapper
 import jakarta.validation.Valid
 import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpStatus

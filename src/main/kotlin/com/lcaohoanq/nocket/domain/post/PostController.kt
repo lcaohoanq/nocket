@@ -4,17 +4,13 @@ import com.lcaohoanq.nocket.api.ApiResponse
 import com.lcaohoanq.nocket.api.PageResponse
 import com.lcaohoanq.nocket.domain.asset.FileStoreService
 import com.lcaohoanq.nocket.domain.cache.IPostRedisService
-import com.lcaohoanq.nocket.domain.friendship.Friendship
 import com.lcaohoanq.nocket.domain.friendship.FriendshipRepository
 import com.lcaohoanq.nocket.domain.post.PostPort.PostResponse
-import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.domain.user.UserService
 import com.lcaohoanq.nocket.enums.FriendShipStatus
 import com.lcaohoanq.nocket.enums.PostType
-import com.lcaohoanq.nocket.mapper.PostMapper
 import com.lcaohoanq.nocket.metadata.MediaMeta
 import com.lcaohoanq.nocket.util.PaginationConverter
-import lombok.RequiredArgsConstructor
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus

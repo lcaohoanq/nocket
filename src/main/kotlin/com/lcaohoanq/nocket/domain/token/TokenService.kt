@@ -7,7 +7,7 @@ import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.domain.user.UserService
 import com.lcaohoanq.nocket.exception.ExpiredTokenException
 import com.lcaohoanq.nocket.exception.TokenNotFoundException
-import com.lcaohoanq.nocket.mapper.UserMapper
+import com.lcaohoanq.nocket.domain.user.UserMapper
 import jakarta.transaction.Transactional
 import lombok.extern.slf4j.Slf4j
 import org.springframework.stereotype.Service

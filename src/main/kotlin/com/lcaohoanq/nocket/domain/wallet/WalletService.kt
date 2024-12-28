@@ -8,7 +8,6 @@ import com.lcaohoanq.nocket.domain.user.IUserService
 import com.lcaohoanq.nocket.domain.user.UserRepository
 import com.lcaohoanq.nocket.domain.wallet.WalletPort.WalletResponse
 import com.lcaohoanq.nocket.enums.EmailCategoriesEnum
-import com.lcaohoanq.nocket.mapper.WalletMapper
 import jakarta.mail.MessagingException
 import lombok.extern.slf4j.Slf4j
 import mu.KotlinLogging

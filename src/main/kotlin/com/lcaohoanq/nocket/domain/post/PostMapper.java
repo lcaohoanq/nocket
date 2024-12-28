@@ -1,7 +1,6 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.post;
 
-import com.lcaohoanq.nocket.domain.post.Post;
-import com.lcaohoanq.nocket.domain.post.PostPort;
+import com.lcaohoanq.nocket.domain.user.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

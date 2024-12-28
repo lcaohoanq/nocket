@@ -1,7 +1,5 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.user;
 
-import com.lcaohoanq.nocket.domain.user.User;
-import com.lcaohoanq.nocket.domain.user.UserPort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

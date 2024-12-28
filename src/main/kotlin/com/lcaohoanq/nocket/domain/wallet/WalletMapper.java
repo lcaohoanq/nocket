@@ -1,6 +1,5 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.wallet;
 
-import com.lcaohoanq.nocket.domain.wallet.Wallet;
 import com.lcaohoanq.nocket.domain.wallet.WalletPort.WalletResponse;
 import org.mapstruct.Mapper;
 

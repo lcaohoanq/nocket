@@ -10,7 +10,7 @@ import com.lcaohoanq.nocket.domain.auth.AuthPort.VerifyUserDTO
 import com.lcaohoanq.nocket.domain.user.IUserService
 import com.lcaohoanq.nocket.domain.user.UserPort.UserResponse
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException
-import com.lcaohoanq.nocket.mapper.UserMapper
+import com.lcaohoanq.nocket.domain.user.UserMapper
 import io.micrometer.core.annotation.Timed
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid

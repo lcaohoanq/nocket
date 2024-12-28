@@ -1,7 +1,5 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.reaction;
 
-import com.lcaohoanq.nocket.domain.reaction.Reaction;
-import com.lcaohoanq.nocket.domain.reaction.ReactionPort;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

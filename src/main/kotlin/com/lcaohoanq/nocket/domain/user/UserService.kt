@@ -16,7 +16,6 @@ import com.lcaohoanq.nocket.enums.EmailCategoriesEnum
 import com.lcaohoanq.nocket.enums.UserRole
 import com.lcaohoanq.nocket.enums.UserStatus
 import com.lcaohoanq.nocket.exception.*
-import com.lcaohoanq.nocket.mapper.UserMapper
 import com.lcaohoanq.nocket.util.PaginationConverter
 import lombok.extern.slf4j.Slf4j
 import org.springframework.data.domain.Page

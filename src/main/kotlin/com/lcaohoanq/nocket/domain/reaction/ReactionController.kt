@@ -4,8 +4,6 @@ import com.lcaohoanq.nocket.api.ApiResponse
 import com.lcaohoanq.nocket.base.exception.DataNotFoundException
 import com.lcaohoanq.nocket.domain.reaction.ReactionPort.ReactionDTO
 import com.lcaohoanq.nocket.domain.reaction.ReactionPort.ReactionResponse
-import com.lcaohoanq.nocket.mapper.ReactionMapper
-import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize

@@ -24,8 +24,8 @@ import com.lcaohoanq.nocket.enums.UserStatus
 import com.lcaohoanq.nocket.exception.ExpiredTokenException
 import com.lcaohoanq.nocket.exception.MalformBehaviourException
 import com.lcaohoanq.nocket.exception.PasswordWrongFormatException
-import com.lcaohoanq.nocket.mapper.TokenMapper
-import com.lcaohoanq.nocket.mapper.UserMapper
+import com.lcaohoanq.nocket.domain.token.TokenMapper
+import com.lcaohoanq.nocket.domain.user.UserMapper
 import com.lcaohoanq.nocket.metadata.MediaMeta
 import com.lcaohoanq.nocket.util.Identifiable
 import io.reactivex.rxjava3.core.Single

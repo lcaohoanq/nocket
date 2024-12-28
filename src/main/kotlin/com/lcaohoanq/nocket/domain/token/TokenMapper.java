@@ -1,6 +1,5 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.token;
 
-import com.lcaohoanq.nocket.domain.token.Token;
 import com.lcaohoanq.nocket.domain.token.TokenPort.TokenResponse;
 import org.mapstruct.Mapper;
 

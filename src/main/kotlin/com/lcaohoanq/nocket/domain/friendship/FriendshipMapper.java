@@ -1,7 +1,5 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.friendship;
 
-import com.lcaohoanq.nocket.domain.friendship.Friendship;
-import com.lcaohoanq.nocket.domain.friendship.FriendshipPort;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

@@ -1,7 +1,8 @@
-package com.lcaohoanq.nocket.mapper;
+package com.lcaohoanq.nocket.domain.reaction;
 
-import com.lcaohoanq.nocket.domain.reaction.PostReaction;
+import com.lcaohoanq.nocket.domain.post.PostMapper;
 import com.lcaohoanq.nocket.domain.reaction.PostReactionPort.PostReactionResponse;
+import com.lcaohoanq.nocket.domain.user.UserMapper;
 import org.mapstruct.Mapper;
 
 @Mapper(

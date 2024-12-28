@@ -6,7 +6,6 @@ import com.lcaohoanq.nocket.domain.otp.IOtpService
 import com.lcaohoanq.nocket.domain.otp.Otp
 import com.lcaohoanq.nocket.domain.user.User
 import com.lcaohoanq.nocket.enums.EmailCategoriesEnum
-import com.lcaohoanq.nocket.util.OtpUtil
 import jakarta.mail.MessagingException
 import lombok.RequiredArgsConstructor
 import lombok.extern.slf4j.Slf4j

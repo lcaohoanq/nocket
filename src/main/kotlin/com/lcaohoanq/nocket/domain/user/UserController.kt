@@ -7,7 +7,6 @@ import com.lcaohoanq.nocket.domain.localization.MessageKey
 import com.lcaohoanq.nocket.domain.user.UserPort.UpdateUserDTO
 import com.lcaohoanq.nocket.domain.user.UserPort.UserResponse
 import com.lcaohoanq.nocket.exception.MethodArgumentNotValidException
-import com.lcaohoanq.nocket.mapper.UserMapper
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
 import org.springframework.data.domain.PageRequest

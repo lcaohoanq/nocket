@@ -52,13 +52,27 @@
   </appender>
 
   <!-- Send logs to both console and file audit -->
-  <logger name="com.lcaohoanq.nocket" level="debug" additivity="false">
+  <!-- Your existing logger -->
+  <logger name="com.pied.tranc" level="debug" additivity="false">
     <appender-ref ref="FILE-AUDIT" />
     <appender-ref ref="STDOUT" />
   </logger>
 
+  <!-- Add this to capture Hibernate/Spring errors -->
+  <logger name="org.hibernate" level="debug" additivity="false">
+    <appender-ref ref="FILE-ERROR" />
+    <appender-ref ref="STDOUT" />
+  </logger>
+
+  <logger name="org.springframework" level="debug" additivity="false">
+    <appender-ref ref="FILE-ERROR" />
+    <appender-ref ref="STDOUT" />
+  </logger>
+
+  <!-- Modify root logger to include STDOUT -->
   <root level="info">
     <appender-ref ref="FILE-ERROR" />
+    <appender-ref ref="STDOUT" />
   </root>
 
 </configuration>
